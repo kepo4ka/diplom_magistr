@@ -2,11 +2,13 @@
 
 include 'init.php';
 
-$elib = new Elibrary('test', 'test');
-
-echoVarDumpPre($elib->getPublicationsInOrganication(17954));
+$elib = new Elibrary();
 
 
+$organisation = $elib->getOrganisationInfo('5051');
+
+
+echoVarDumpPre($organisation);
 ?>
 
 
