@@ -112,13 +112,13 @@ class ElibraryParser
     }
 
 
-    function getPublications($orgsid = 5051, $pagenum = 1)
+    function getPublications($id = 5051, $pagenum = 1)
     {
         try {
             $url = $this->buildApiUrl('publications_in_organisation');
 
             $data['params'] = [
-                'orgsid' => $orgsid,
+                'orgsid' => $id,
                 'pagenum' => $pagenum,
                 'wrapAPIKey' => $this->wrapAPIKey
             ];
@@ -134,11 +134,11 @@ class ElibraryParser
         return $result;
     }
 
-    function getOrganisationInfo($orgsid = 5051)
+    function getOrganisationInfo($id = 5051)
     {
         $url = $this->buildApiUrl('organisation');
         $data['params'] = [
-            'orgsid' => $orgsid,
+            'orgsid' => $id,
             'wrapAPIKey' => $this->wrapAPIKey
         ];
         $result = $this->fetch($url, $data);
@@ -146,6 +146,24 @@ class ElibraryParser
         return $result;
     }
 
+    function getAuthorInfo($id = 369053)
+    {
+        $url = $this->buildApiUrl('author');
+        $data['params'] = [
+            'id' => $id,
+            'wrapAPIKey' => $this->wrapAPIKey
+        ];
+        $result = $this->fetch($url, $data);
+
+
+        if (!empty($result['data']['organisations'])) {
+            $result['data']['organisations'] = array_unique($result['data']['organisations']);
+        }
+
+        $result = $result['data'];
+
+        return $result;
+    }
 
 }
 

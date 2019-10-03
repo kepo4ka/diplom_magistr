@@ -8,15 +8,17 @@ $elibDB = new ElibraryDB();
 $org = 5051;
 $publlication = 37039312;
 
-$info = $elibParser->getPublication();
+$info = $elibParser->getAuthorInfo();
 
-$elibDB->savePublication($info);
+$elibDB->saveAuthor($info);
 
-$refs = $info['refs'];
+foreach ($info['organisations'] as $org_id) {
+    $org = $elibParser->getOrganisationInfo($org_id);
+    $elibDB->saveOrganisation($org);
+}
 
 
-
-echoVarDumpPre($refs);
+echoVarDumpPre($info);
 ?>
 
 

@@ -49,6 +49,32 @@ class ElibraryDB
         }
         return true;
     }
+
+    function saveAuthor($data)
+    {
+        global $db;
+        $table = 'authors';
+
+
+        $query = 'SELECT `authorid` FROM ?n WHERE `authorid`=?i LIMIT 1';
+
+        $is_exist = $db->getOne($query, $table, $data['id']);
+
+        if (!$is_exist) {
+            $insert = array();
+            $insert['authorid'] = $data['id'];
+            $insert['fio'] = $data['fio'];
+            $insert['articles_count'] = 0;
+            $insert['citation_count'] = 0;
+            $insert['hirsch_index'] = 0;
+
+            $query = 'INSERT INTO ?n SET ?u';
+
+            $db->query($query, $table, $insert);
+        }
+
+        return true;
+    }
 }
 
 
