@@ -62,7 +62,7 @@ class Elibrary
         return !empty($result['data']['output']) && $result['data']['output'] == $this->login_check_string;
     }
 
-    function getPublication($id = 36873446)
+    function getPublication($id = 35287282)
     {
         if (empty($this->stateToken)) {
             $this->login();
@@ -79,11 +79,28 @@ class Elibrary
         return $result['data'];
     }
 
+    function getPublicationAjaxRefs($id = 35287282)
+    {
+        if (empty($this->stateToken)) {
+            $this->login();
+        }
 
-    function getPublications($orgsid, $pagenum = 1)
+        $url = $this->buildApiUrl('publication_refs_ajax');
+        $data['params'] = [
+            'id' => $id,
+            'stateToken' => $this->stateToken,
+            'wrapAPIKey' => $this->wrapAPIKey
+        ];
+
+        $result = $this->fetch($url, $data);
+        return $result['data'];
+    }
+
+
+    function getPublications($orgsid = 5051, $pagenum = 1)
     {
         try {
-            $url = $this->buildApiUrl('publications_in_organisations');
+            $url = $this->buildApiUrl('publications_in_organisation');
 
             $data['params'] = [
                 'orgsid' => $orgsid,
@@ -92,15 +109,17 @@ class Elibrary
             ];
 
             $result = $this->fetch($url, $data);
+            if (!empty($result['data']['publications'])) {
+                return $result['data']['publications'];
+            }
 
-            $result = $result['data']['output'];
         } catch (Exception $exception) {
             $result = null;
         }
         return $result;
     }
 
-    function getOrganisationInfo($orgsid)
+    function getOrganisationInfo($orgsid=5051)
     {
         $url = $this->buildApiUrl('organisation');
         $data['params'] = [
@@ -109,36 +128,7 @@ class Elibrary
         ];
         $result = $this->fetch($url, $data);
 
-        $organisation_info = array();
-        $organisation_info['id'] = $orgsid;
-        $organisation_info['name'] = '';
-        $organisation_info['name_en'] = '';
-        $organisation_info['city'] = '';
-        $organisation_info['country'] = '';
-
-        try {
-            $result = $result['data']['output'];
-            $result = trim(preg_replace('/\r\n/', ' ', $result));
-            $result = trim(preg_replace('/[ ]+/', ' ', $result));
-
-
-            preg_match('/Полное название (.+?)" Название/', $result, $matches);
-            $organisation_info['name'] = $matches[1];
-
-            preg_match('/Название на англ\. (.+?) Сокращение/', $result, $matches);
-            $organisation_info['name_en'] = $matches[1];
-
-            preg_match('/Страна (.+?) Регион/', $result, $matches);
-            $organisation_info['country'] = $matches[1];
-
-            preg_match('/Город (.+?) Город/', $result, $matches);
-            $organisation_info['city'] = $matches[1];
-
-        } catch (Exception $exception) {
-            $result = null;
-        }
-
-        return $organisation_info;
+        return $result;
     }
 
 
