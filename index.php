@@ -4,11 +4,13 @@ include 'init.php';
 
 $elib = new Elibrary();
 
+$org = 5051;
+$publlication = 37039312;
 
-$organisation = $elib->getOrganisationInfo('5051');
+$info = $elib->getPublication($publlication);
 
 
-echoVarDumpPre($organisation);
+echoVarDumpPre($info);
 ?>
 
 
