@@ -7,16 +7,20 @@ class ElibraryDB
     {
     }
 
+    function checkExist($table, $value)
+    {
+        global $db;
+        $query = "SELECT `id` FROM ?n WHERE `id`=?i LIMIT 1";
+        $is_exist = $db->getOne($query, $table, $value);
+        return $is_exist;
+    }
+
     function saveOrganisation($data)
     {
         global $db;
         $table = 'organisations';
 
-        $query = 'SELECT `orgsid` FROM ?n WHERE `orgsid`=?i LIMIT 1';
-
-        $is_exist = $db->getOne($query, $table, $data['orgsid']);
-
-        if (!$is_exist) {
+        if (!$this->checkExist($table, $data['orgsid'])) {
             $query = 'INSERT INTO ?n SET ?u';
 
             return $db->query($query, $table, $data);
@@ -24,20 +28,15 @@ class ElibraryDB
         return true;
     }
 
-
     function savePublication($data)
     {
         global $db;
         $table = 'publications';
 
 
-        $query = 'SELECT `publicationid` FROM ?n WHERE `publicationid`=?i LIMIT 1';
-
-        $is_exist = $db->getOne($query, $table, $data['id']);
-
-        if (!$is_exist) {
+        if (!$this->checkExist($table, $data['id'])) {
             $insert = array();
-            $insert['publicationid'] = $data['id'];
+            $insert['id'] = $data['id'];
             $insert['title'] = $data['title'];
             $insert['type'] = $data['type'];
             $insert['year'] = $data['year'];
@@ -55,14 +54,9 @@ class ElibraryDB
         global $db;
         $table = 'authors';
 
-
-        $query = 'SELECT `authorid` FROM ?n WHERE `authorid`=?i LIMIT 1';
-
-        $is_exist = $db->getOne($query, $table, $data['id']);
-
-        if (!$is_exist) {
+        if (!$this->checkExist($table, $data['id'])) {
             $insert = array();
-            $insert['authorid'] = $data['id'];
+            $insert['id'] = $data['id'];
             $insert['fio'] = $data['fio'];
             $insert['articles_count'] = 0;
             $insert['citation_count'] = 0;

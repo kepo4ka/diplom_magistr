@@ -89,7 +89,9 @@ class ElibraryParser
             }
         }
 
-        $result = $result['publication'];
+        if (!empty($result['publication'])) {
+            $result = $result['publication'];
+        }
 
         return $result;
     }
