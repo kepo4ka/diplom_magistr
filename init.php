@@ -1,10 +1,21 @@
 <?php
 
 require_once 'lib/simple_html_dom.php';
+
+// https://github.com/colshrapnel/safemysql/blob/master/safemysql.class.php
+require_once 'lib/safemysql.class.php';
 require_once 'functions.php';
-require_once 'class/Elibrary.php';
+require_once 'class/ElibraryParser.php';
+require_once 'class/ElibraryDB.php';
 
 
+$user = 'root';
+$pass = '';
+$db_name = 'elibrary';
+$host = 'localhost';
+
+$db = new SafeMysql(array('host' => $host, 'user' => $user, 'pass' => $pass, 'db' => $db_name, 'charset' => 'utf8'));
 $simple_dom = new simple_html_dom();
+
 
 ?>

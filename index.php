@@ -2,15 +2,21 @@
 
 include 'init.php';
 
-$elib = new Elibrary();
+$elibParser = new ElibraryParser();
+$elibDB = new ElibraryDB();
 
 $org = 5051;
 $publlication = 37039312;
 
-$info = $elib->getPublication($publlication);
+$info = $elibParser->getPublication();
+
+$elibDB->savePublication($info);
+
+$refs = $info['refs'];
 
 
-echoVarDumpPre($info);
+
+echoVarDumpPre($refs);
 ?>
 
 

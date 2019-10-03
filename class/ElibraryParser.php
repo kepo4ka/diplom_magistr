@@ -1,7 +1,7 @@
 <?php
 
 
-class Elibrary
+class ElibraryParser
 {
     var $login;
     var $password;
@@ -14,8 +14,8 @@ class Elibrary
     {
         $this->base_url = 'https://elibrary.ru/';
         $this->api_url = 'https://wrapapi.com/use/kepo4ka/test/';
-        $this->login = 'larisa2566';
-        $this->password = 'larisa7502635';
+        $this->login = 'kapipoh';
+        $this->password = 'qwerty123';
         $this->wrapAPIKey = 'gkCzQ9pXQ5REWTv9KDPFDqdbAtcMZZ3K';
         $this->stateToken = '';
         $this->login_check_string = 'СЕССИЯ';
@@ -76,7 +76,22 @@ class Elibrary
         ];
 
         $result = $this->fetch($url, $data);
-        return $result['data'];
+
+        if (!empty($result['data'])) {
+            $result = $result['data'];
+        }
+
+        if (!empty($result['publication']['refs'])) {
+            $refs = $this->getPublicationAjaxRefs($id);
+
+            if (!empty($refs['refs'])) {
+                $result['publication']['refs'] = array_merge($result['publication']['refs'], $refs['refs']);
+            }
+        }
+
+        $result = $result['publication'];
+
+        return $result;
     }
 
     function getPublicationAjaxRefs($id = 35287282)
@@ -119,7 +134,7 @@ class Elibrary
         return $result;
     }
 
-    function getOrganisationInfo($orgsid=5051)
+    function getOrganisationInfo($orgsid = 5051)
     {
         $url = $this->buildApiUrl('organisation');
         $data['params'] = [
@@ -131,18 +146,6 @@ class Elibrary
         return $result;
     }
 
-
-//    function getPublicationsInOrganication($orgsid, $pagenum = 1)
-//    {
-//        $url = $this->base_url . 'org_items.asp';
-//        $data = ['orgsid' => $orgsid, 'pagenum' => $pagenum];
-//
-////        $url = $this->base_url . 'org_items.asp?' . http_build_query($data);
-//
-//        $res = fetch($url, $data, true);
-//
-//        return $res;
-//    }
 
 }
 
