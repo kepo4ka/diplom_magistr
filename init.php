@@ -1,11 +1,13 @@
 <?php
 
+require_once 'config.php';
 require_once 'lib/simple_html_dom.php';
 
 // https://github.com/colshrapnel/safemysql/blob/master/safemysql.class.php
 require_once 'lib/safemysql.class.php';
 require_once 'functions.php';
 require_once 'class/ElibraryParser.php';
+require_once 'class/ElibraryCurl.php';
 require_once 'class/ElibraryDB.php';
 
 

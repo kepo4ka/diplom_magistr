@@ -2,10 +2,24 @@
 
 include 'init.php';
 
+
+//exit;
+
 $elibParser = new ElibraryParser();
+$elibCurl = new ElibraryCurl();
 $elibDB = new ElibraryDB();
 
 $org = 5051;
+
+$info = $elibCurl->getPublication();
+
+echoVarDumpPre($info);
+
+
+
+
+
+exit;
 
 $k = 0;
 

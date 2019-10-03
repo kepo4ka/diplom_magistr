@@ -12,10 +12,13 @@ class ElibraryParser
 
     function __construct()
     {
-        $this->base_url = 'https://elibrary.ru/';
+        global $elibrary_config;
+
+        $this->base_url = $elibrary_config['base_url'];
+        $this->login = $elibrary_config['login'];
+        $this->password = $elibrary_config['password'];
+
         $this->api_url = 'https://wrapapi.com/use/kepo4ka/test/';
-        $this->login = 'kapipoh';
-        $this->password = 'qwerty123';
         $this->wrapAPIKey = 'gkCzQ9pXQ5REWTv9KDPFDqdbAtcMZZ3K';
         $this->stateToken = '';
         $this->login_check_string = 'СЕССИЯ';
