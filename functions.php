@@ -60,16 +60,23 @@ function checkRegular($re, $str, $index = 1)
     $matches = array();
 
     if (preg_match($re, $str, $matches)) {
-        if (!empty($matches[1])) {
-            $result = $matches[1];
+        if (!empty($matches[$index])) {
+            $result = $matches[$index];
         }
     }
     return $result;
 }
 
+
+function jsRandom(){
+    return mt_rand() / (mt_getrandmax() + 1);
+}
+
+
 function echoVarDumpPre($var)
 {
     echo '<pre>';
+//    echo json_encode($var);
     var_dump($var);
     echo '</pre>';
     exit;
