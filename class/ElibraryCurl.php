@@ -46,10 +46,35 @@ class ElibraryCurl
         clearCookie();
     }
 
+    function getOrganisationInfo($id)
+    {
+        $ref_publications = array();
+
+        if (!$this->checkLogin()) {
+            $this->login();
+        }
+
+        $url = $this->base_url . '/' . 'get_item_refs.asp';
+        $data['params'] = ['id' => $id,
+            'rand' => jsRandom()];
+        $parsed_html = fetch($url, $data);
+
+        $data = str_get_html($parsed_html);
+
+        $refs = $data->find('a[title=Перейти на описание цитируемой публикации]');
+
+        foreach ($refs as $ref) {
+            $ref_id = checkRegular('/item.asp\?id=(\d+)/m', $ref->href);
+
+            $ref_publications[] = $ref_id;
+        }
+
+        return $ref_publications;
+    }
+
 
     function getPublication($id = 35287282)
     {
-
         $publication = array();
         $publication['id'] = $id;
         $publication['title'] = '';
@@ -69,35 +94,83 @@ class ElibraryCurl
 
         $data = str_get_html($parsed_html);
 
-        $res = $data->find('table td[width=574][align=center]');
 
+        $title = $data->find('.bigtext', 0)->plaintext;
+        $publication['title'] = @$title;
+
+
+        $res = $data->find('table td[width=574][align=center]');
         foreach ($res as $d) {
             $k = false;
             $result = checkRegular('/Тип:&nbsp;<font color=#00008f>(.+?)<\/font>/m', $d);
             if (!empty($result)) {
                 $publication['type'] = $result;
-                $k = true;
             }
 
             $result = checkRegular('/Язык:&nbsp;<font color=#00008f>(.+?)<\/font>/m', $d);
             if (!empty($result)) {
                 $publication['language'] = $result;
-                $k = true;
             }
-            if ($k) {
-                break;
+
+            $result = checkRegular('/Год:&nbsp;<font color=#00008f>(.+?)<\/font>/m', $d);
+            if (!empty($result)) {
+                $publication['year'] = $result;
             }
         }
 
 
-        $title = $data->find('.bigtext', 0)->plaintext;
+        $authors = $data->find('a[title=Список публикаций этого автора]');
+        foreach ($authors as $author) {
+            $author_id = checkRegular('/author_items.asp\?authorid=(\d+)/m', $author->href);
+            $publication['authors'][] = $author_id;
+        }
+        $publication['authors'] = array_unique($publication['authors']);
 
-        $publication['title'] = @$title;
+        $refs = $data->find('a[title=Перейти на описание цитируемой публикации]');
+        foreach ($refs as $ref) {
+            $ref_id = checkRegular('/item.asp\?id=(\d+)/m', $ref->href);
+            $publication['refs'][] = $ref_id;
+        }
+
+        $load_more = $data->find('#show_reflist');
+        if (!empty($load_more)) {
+            $more_refs = $this->getMorePublicationRefs($id);
+            $publication['refs'] = array_merge($publication['refs'], $more_refs);
+        }
+        $publication['refs'] = array_unique($publication['refs']);
 
         $data->clear();
-        return $publication;
 
+        return $publication;
     }
+
+    function getMorePublicationRefs($id)
+    {
+        $ref_publications = array();
+
+        if (!$this->checkLogin()) {
+            $this->login();
+        }
+
+        $url = $this->base_url . '/' . 'get_item_refs.asp';
+        $data['params'] = ['id' => $id,
+            'rand' => jsRandom()];
+        $parsed_html = fetch($url, $data);
+
+        $data = str_get_html($parsed_html);
+
+        $refs = $data->find('a[title=Перейти на описание цитируемой публикации]');
+
+        foreach ($refs as $ref) {
+            $ref_id = checkRegular('/item.asp\?id=(\d+)/m', $ref->href);
+
+            $ref_publications[] = $ref_id;
+        }
+
+        return $ref_publications;
+    }
+
+
 
 }
 
