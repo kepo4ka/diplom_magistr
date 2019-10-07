@@ -15,30 +15,26 @@ class ElibraryDB
         return $is_exist;
     }
 
-    private function save($data, $table, $primary = 'id')
+    private function save($p_data, $table, $primary = 'id')
     {
         global $db;
-        if (empty($data)) {
+        if (empty($p_data)) {
             return false;
         }
 
         $columns = getColumnNames($table);
-        $data = $db->filterArray($data, $columns);
+        $data = $db->filterArray($p_data, $columns);
 
-        if (empty($data[$primary]))
-        {
-            $data['table'] = $table;
-            echoVarDumpPre($data);
-        }
 
-        if (!$this->checkExist($table, $data[$primary])) {
+        if (@!$this->checkExist($table, $data[$primary])) {
             $query = 'INSERT INTO ?n SET ?u';
 
             return $db->query($query, $table, $data);
-        } else {
+        } else if (!empty($p_data[$primary])) {
             $query = 'UPDATE ?n SET ?u WHERE ?n=?i';
             return $db->query($query, $table, $data, $primary, $data[$primary]);
         }
+        return true;
     }
 
 
