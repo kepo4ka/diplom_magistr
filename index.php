@@ -10,12 +10,25 @@ $elibCurl = new ElibraryCurl();
 $elibDB = new ElibraryDB();
 
 $org = 5051;
+$author = 761696;
 
-$info = $elibCurl->getPublication();
+//$publications = array();
+//$k = 1;
+//while (true) {
+//    $publications_part = $elibCurl->getAuthorPublications($author, $k);
+//    if (empty($publications_part)) {
+//        break;
+//    }
+//
+//    $publications = array_merge($publications, $publications_part);
+//    $k++;
+//}
+//
+//$publications = array_unique($publications);
 
-echoVarDumpPre($info);
-
-
+$info = $elibCurl->getPublication(37414634);
+$result = $elibDB->savePublication($info);
+echoVarDumpPre($result);
 
 
 

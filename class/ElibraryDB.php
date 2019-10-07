@@ -15,59 +15,39 @@ class ElibraryDB
         return $is_exist;
     }
 
-    function saveOrganisation($data)
+    private function save($data, $table, $primary = 'id')
     {
         global $db;
-        $table = 'organisations';
+        $columns = getColumnNames($table);
+        $data = $db->filterArray($data, $columns);
 
-        if (!$this->checkExist($table, $data['orgsid'])) {
+        if (!$this->checkExist($table, $data[$primary])) {
             $query = 'INSERT INTO ?n SET ?u';
 
             return $db->query($query, $table, $data);
+        } else {
+            $query = 'UPDATE ?n SET ?u WHERE ?n=?i';
+            return $db->query($query, $table, $data, $primary, $data[$primary]);
         }
-        return true;
+    }
+
+
+    function saveOrganisation($data)
+    {
+        $table = 'organisations';
+        return $this->save($data, $table);
     }
 
     function savePublication($data)
     {
-        global $db;
         $table = 'publications';
-
-
-        if (!$this->checkExist($table, $data['id'])) {
-            $insert = array();
-            $insert['id'] = $data['id'];
-            $insert['title'] = $data['title'];
-            $insert['type'] = $data['type'];
-            $insert['year'] = $data['year'];
-            $insert['language'] = $data['language'];
-
-            $query = 'INSERT INTO ?n SET ?u';
-
-            return $db->query($query, $table, $insert);
-        }
-        return true;
+        return $this->save($data, $table);
     }
 
     function saveAuthor($data)
     {
-        global $db;
         $table = 'authors';
-
-        if (!$this->checkExist($table, $data['id'])) {
-            $insert = array();
-            $insert['id'] = $data['id'];
-            $insert['fio'] = $data['fio'];
-            $insert['articles_count'] = 0;
-            $insert['citation_count'] = 0;
-            $insert['hirsch_index'] = 0;
-
-            $query = 'INSERT INTO ?n SET ?u';
-
-            $db->query($query, $table, $insert);
-        }
-
-        return true;
+        return $this->save($data, $table);
     }
 }
 

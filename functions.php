@@ -47,6 +47,31 @@ function fetch($url, $z = null)
     return $result;
 }
 
+
+
+/**
+ * Получить столбцы таблицы
+ * @param $table_name string Исходная таблица
+ * @return array Список столбцов
+ */
+function getColumnNames($table_name)
+{
+    global $db;
+    $columns = array();
+
+    try {
+        $sql = "SHOW COLUMNS FROM `$table_name`";
+        $result = $db->query($sql);
+        while ($row = $db->fetch($result)) {
+            $columns[] = $row['Field'];
+        }
+    } catch (Exception $ex) {
+
+    }
+    return $columns;
+}
+
+
 function clearCookie()
 {
     global $cookiePath;
@@ -67,11 +92,34 @@ function checkRegular($re, $str, $index = 1)
     return $result;
 }
 
+function checkArrayFilled($array)
+{
+    foreach ($array as $key => $value) {
+        if (empty($array[$key])) {
+            return false;
+        }
+    }
+    return true;
+}
 
-function jsRandom(){
+function jsRandom()
+{
     return mt_rand() / (mt_getrandmax() + 1);
 }
 
+
+function delApostrof($string)
+{
+    $bad_symbol = '"';
+    $count = substr_count($string, $bad_symbol);
+    $last_symbol = substr($string, -1);
+
+
+    if ($count % 2 == 1 && $last_symbol == $bad_symbol) {
+        $string = substr($string, 0, -1);
+    }
+    return $string;
+}
 
 function echoVarDumpPre($var)
 {
