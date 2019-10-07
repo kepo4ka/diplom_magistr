@@ -78,7 +78,7 @@ function updateAgent()
 
 function fetch($url, $z = null)
 {
-    global $cookiePath, $def_proxy_info;
+    global $cookiePath, $def_proxy_info, $query_count;
 
     $result = '';
     try {
@@ -131,7 +131,7 @@ function fetch($url, $z = null)
     }
 
     usleep(rand(210304, 5503146));
-
+    $query_count++;
     return $result;
 }
 
