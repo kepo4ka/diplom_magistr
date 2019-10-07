@@ -11,6 +11,8 @@ $elibDB = new ElibraryDB();
 
 $org_id = 5051;
 
+$query_count = 0;
+
 
 $start = microtime(true);
 
@@ -77,6 +79,8 @@ while (true) {
     }
     $k++;
 }
+
+echo "Количество запросов: " . $query_count . "<br>";
 
 echo 'Информация об организации <>' . $organisation['name'] . '</b> Добавлена <hr>';
 echo 'Время выполнения скрипта: ' . round(microtime(true) - $start, 4) . ' сек.';
