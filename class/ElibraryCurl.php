@@ -19,6 +19,19 @@ class ElibraryCurl
         return fetch($url);
     }
 
+    function getGoogle()
+    {
+        $url = 'https://google.ru/';
+        return fetch($url);
+    }
+
+    function get2ip()
+    {
+        $url = 'https://2ip.ru/';
+        return fetch($url);
+    }
+
+
     function login()
     {
         $url = $this->base_url . '/' . 'start_session.asp';
@@ -106,6 +119,7 @@ class ElibraryCurl
             }
         }
 
+
         $data->clear();
         return $organisation;
     }
@@ -151,7 +165,7 @@ class ElibraryCurl
         $publication['refs'] = array();
 
         if (!$this->checkLogin()) {
-            $this->login();
+//            $this->login();
         }
 
         $url = $this->base_url . '/' . 'item.asp';
@@ -213,7 +227,7 @@ class ElibraryCurl
         $ref_publications = array();
 
         if (!$this->checkLogin()) {
-            $this->login();
+//            $this->login();
         }
 
         $url = $this->base_url . '/' . 'get_item_refs.asp';
@@ -252,6 +266,11 @@ class ElibraryCurl
         $parsed_html = fetch($url, $data);
 
         $data = str_get_html($parsed_html);
+
+        if (empty($data)) {
+            return false;
+        }
+
         $body = $data->find('body', 0)->plaintext;
 
         $res = $data->find('title', 0)->innertext;

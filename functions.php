@@ -1,11 +1,84 @@
 <?php
 
+function getProxy()
+{
+    global $proxy_url;
+
+
+    try {
+
+        $proxy_info = json_decode(fetch($proxy_url), true);
+
+        $type = '';
+
+        if (empty($proxy_info['protocol'])) {
+            return false;
+        }
+
+        switch ($proxy_info['protocol']) {
+            case 'http':
+                $type = CURLPROXY_HTTP;
+                break;
+            case 'socks4':
+                $type = CURLPROXY_SOCKS4;
+                break;
+            case 'socks4a':
+                $type = CURLPROXY_SOCKS4A;
+                break;
+            case 'socks5':
+                $type = CURLPROXY_SOCKS5;
+                break;
+        }
+
+        if (empty($type)) {
+            sleep(rand(1, 3));
+            return getProxy();
+        }
+
+        $proxy_info['type'] = $type;
+
+
+        $proxy_info['full'] = $proxy_info['ip'] . ':' . $proxy_info['port'];
+
+        return $proxy_info;
+
+    } catch (Exception $exception) {
+        return false;
+    }
+}
+
+
+function getProxyList()
+{
+    global $proxy_list;
+    $url = 'https://www.proxy-list.download/api/v1/get?type=http';
+
+    $data = fetch($url);
+
+    $proxy_list = preg_split('/\n/m', $data);
+
+    return $proxy_list;
+}
+
+
+function updateAgent()
+{
+    global $cookiePath1, $def_proxy_info;
+
+
+//        $def_proxy_info = getProxy();
+    $proxy_list = getProxyList();
+    $index = rand(0, count($proxy_list) - 1);
+    $def_proxy_info['full'] = $proxy_list[$index];
+    $def_proxy_info['type'] = CURLPROXY_HTTP;
+    @unlink($cookiePath1);
+
+    return true;
+}
+
 function fetch($url, $z = null)
 {
-    global $cookiePath;
-
-//  $proxy = '127.0.0.1:8888';
-//  $proxyauth = 'user:password';
+    global $cookiePath, $def_proxy_info;
 
     $result = '';
     try {
@@ -21,7 +94,14 @@ function fetch($url, $z = null)
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_AUTOREFERER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        //curl_setopt($ch, CURLOPT_PROXYUSERPWD, $proxyauth);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 200); // http request timeout 20 seconds
+
+        if (!empty($def_proxy_info)) {
+            curl_setopt($ch, CURLOPT_PROXYTYPE, $def_proxy_info['type']);
+            curl_setopt($ch, CURLOPT_PROXY, $def_proxy_info['full']);
+//        curl_setopt($ch, CURLOPT_PROXYUSERPWD, $proxyauth);
+        }
+
 
 //
 //        if (isset($z['post'])) {
@@ -44,10 +124,13 @@ function fetch($url, $z = null)
 
 
         $result = curl_exec($ch);
+
         curl_close($ch);
     } catch (Exception $ex) {
 
     }
+
+    usleep(rand(210304, 5503146));
 
     return $result;
 }

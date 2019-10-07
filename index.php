@@ -11,17 +11,19 @@ $elibDB = new ElibraryDB();
 
 $org_id = 5051;
 
+
 $start = microtime(true);
 
-$organisation = $elibCurl->getOrganisationInfo($org_id);
+//updateAgent();
+$organisation = $elibCurl->getOrganisationInfo();
 $elibDB->saveOrganisation($organisation);
 
 $k = 1;
 
-while (true) {
-    $organisation = $elibCurl->getOrgPublications($org_id, $k);
-    if (!empty($organisation)) {
-        foreach ($organisation as $publ_id) {
+while ($k < 2) {
+    $org_publications = $elibCurl->getOrgPublications($org_id, $k);
+    if (!empty($org_publications)) {
+        foreach ($org_publications as $publ_id) {
             if (!$elibDB->checkExist('publications', $publ_id)) {
                 $publication = $elibCurl->getPublication($publ_id);
                 if (empty($publication)) {
@@ -67,6 +69,7 @@ while (true) {
                         }
                     }
                 }
+                updateAgent();
             }
         }
 

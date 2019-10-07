@@ -18,6 +18,10 @@ class ElibraryDB
     private function save($data, $table, $primary = 'id')
     {
         global $db;
+        if (empty($data)) {
+            return false;
+        }
+
         $columns = getColumnNames($table);
         $data = $db->filterArray($data, $columns);
 
@@ -61,6 +65,7 @@ class ElibraryDB
             'publicationid' => $publication_id,
             'orgsid' => $organisation_id
         ];
+
 
         return $this->save($data, $table);
     }
