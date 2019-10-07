@@ -178,7 +178,7 @@ class ElibraryCurl
                 $publication['language'] = $result;
             }
 
-            $result = checkRegular('/Год(&nbsp;издания)?:&nbsp;<font color=#00008f>(.+?)<\/font>/m', $d, 2);
+            $result = checkRegular('/Год(.+?)?:&nbsp;<font color=#00008f>(.+?)<\/font>/m', $d, 2);
             if (!empty($result)) {
                 $publication['year'] = $result;
             }
@@ -244,6 +244,7 @@ class ElibraryCurl
         $author['articles_count'] = 0;
         $author['citation_count'] = 0;
         $author['hirsch_index'] = 0;
+        $author['organisations'] = 0;
 
 
         $url = $this->base_url . '/' . 'author_profile.asp';
@@ -271,6 +272,14 @@ class ElibraryCurl
         }
 
         $author['hirsch_index'] = checkRegular('/Индекс Хирша по всем публикациям на elibrary.ru(\d+)/m', $body);
+
+
+        $matches = array();
+        preg_match_all('/org_about\.asp\?orgsid=(\d+)/m', $parsed_html, $matches);
+
+        if (!empty($matches[1])) {
+            $author['organisations'] = array_unique($matches[1]);
+        }
 
         $data->clear();
         return $author;
