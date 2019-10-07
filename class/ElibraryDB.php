@@ -25,6 +25,12 @@ class ElibraryDB
         $columns = getColumnNames($table);
         $data = $db->filterArray($data, $columns);
 
+        if (empty($data[$primary]))
+        {
+            $data['table'] = $table;
+            echoVarDumpPre($data);
+        }
+
         if (!$this->checkExist($table, $data[$primary])) {
             $query = 'INSERT INTO ?n SET ?u';
 

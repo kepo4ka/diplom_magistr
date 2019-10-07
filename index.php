@@ -36,7 +36,7 @@ while ($k < 2) {
                     $elibDB->relationPublicationPublication($ref, $publication['id']);
                 }
 
-                $elibDB->relationOrganisationPublication($publication['id'], $organisation['id']);
+                $elibDB->relationOrganisationPublication($publication['id'], $org_id);
 
 
                 if (empty($publication['authors'])) {
@@ -69,7 +69,6 @@ while ($k < 2) {
                         }
                     }
                 }
-                updateAgent();
             }
         }
 
