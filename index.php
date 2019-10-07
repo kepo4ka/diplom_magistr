@@ -5,48 +5,28 @@ include 'init.php';
 
 //exit;
 
-$elibParser = new ElibraryParser();
+//$elib = new ElibraryParser();
 $elibCurl = new ElibraryCurl();
 $elibDB = new ElibraryDB();
 
 $org = 5051;
-$author = 761696;
 
-//$publications = array();
-//$k = 1;
-//while (true) {
-//    $publications_part = $elibCurl->getAuthorPublications($author, $k);
-//    if (empty($publications_part)) {
-//        break;
-//    }
-//
-//    $publications = array_merge($publications, $publications_part);
-//    $k++;
-//}
-//
-//$publications = array_unique($publications);
+$start = microtime(true);
 
-$info = $elibCurl->getPublication(37414634);
-$result = $elibDB->savePublication($info);
-echoVarDumpPre($result);
+$info = $elibCurl->getOrganisationInfo($org);
+$elibDB->saveOrganisation($info);
 
+$k = 1;
 
-
-exit;
-
-$k = 0;
-
-while ($k < 1) {
-
-    $info = $elibParser->getPublications($org, $k + 1);
+while (true) {
+    $info = $elibCurl->getOrgPublications($org, $k);
     if (!empty($info)) {
         foreach ($info as $publ_id) {
             if (!$elibDB->checkExist('publications', $publ_id)) {
-                $publication = $elibParser->getPublication($publ_id);
+                $publication = $elibCurl->getPublication($publ_id);
                 if (empty($publication)) {
                     continue;
                 }
-                echoVarDumpPre($publ_id);
 
                 $elibDB->savePublication($publication);
 
@@ -57,7 +37,7 @@ while ($k < 1) {
                 foreach ($publication['authors'] as $author_id) {
 
                     if (!$elibDB->checkExist('authors', $author_id)) {
-                        $author = $elibParser->getAuthorInfo($author_id);
+                        $author = $elibCurl->getAuthorInfo($author_id);
 
                         if (empty($author)) {
                             continue;
@@ -65,10 +45,9 @@ while ($k < 1) {
 
                         $elibDB->saveAuthor($author);
 
-
                         foreach ($author['organisations'] as $organisation_id) {
                             if (!$elibDB->checkExist('organisations', $organisation_id)) {
-                                $organisation = $elibParser->getOrganisationInfo($organisation_id);
+                                $organisation = $elibCurl->getOrganisationInfo($organisation_id);
 
                                 if (empty($organisation)) {
                                     continue;
@@ -85,21 +64,13 @@ while ($k < 1) {
     } else {
         break;
     }
-
-
     $k++;
 }
 
+echo 'Информация об организации <>' . $info['name'] . '</b> Добавлена <hr>';
+echo 'Время выполнения скрипта: ' . round(microtime(true) - $start, 4) . ' сек.';
+exit;
 
-$elibDB->saveAuthor($info);
-
-foreach ($info['organisations'] as $org_id) {
-    $org = $elibParser->getOrganisationInfo($org_id);
-    $elibDB->saveOrganisation($org);
-}
-
-
-echoVarDumpPre($info);
 ?>
 
 
