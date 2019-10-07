@@ -20,7 +20,7 @@ $elibDB->saveOrganisation($organisation);
 
 $k = 1;
 
-while ($k < 2) {
+while (true) {
     $org_publications = $elibCurl->getOrgPublications($org_id, $k);
     if (!empty($org_publications)) {
         foreach ($org_publications as $publ_id) {
@@ -36,7 +36,7 @@ while ($k < 2) {
                     $elibDB->relationPublicationPublication($ref, $publication['id']);
                 }
 
-                $elibDB->relationOrganisationPublication($publication['id'], $org_id);
+                $elibDB->relationOrganisationPublication($publication['id'], $organisation['id']);
 
 
                 if (empty($publication['authors'])) {
