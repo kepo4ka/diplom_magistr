@@ -9,19 +9,19 @@ include 'init.php';
 $elibCurl = new ElibraryCurl();
 $elibDB = new ElibraryDB();
 
-$org = 5051;
+$org_id = 5051;
 
 $start = microtime(true);
 
-$info = $elibCurl->getOrganisationInfo($org);
-$elibDB->saveOrganisation($info);
+$organisation = $elibCurl->getOrganisationInfo($org_id);
+$elibDB->saveOrganisation($organisation);
 
 $k = 1;
 
 while (true) {
-    $info = $elibCurl->getOrgPublications($org, $k);
-    if (!empty($info)) {
-        foreach ($info as $publ_id) {
+    $organisation = $elibCurl->getOrgPublications($org_id, $k);
+    if (!empty($organisation)) {
+        foreach ($organisation as $publ_id) {
             if (!$elibDB->checkExist('publications', $publ_id)) {
                 $publication = $elibCurl->getPublication($publ_id);
                 if (empty($publication)) {
@@ -29,6 +29,13 @@ while (true) {
                 }
 
                 $elibDB->savePublication($publication);
+
+                foreach ($publication['refs'] as $ref) {
+                    $elibDB->relationPublicationPublication($ref, $publication['id']);
+                }
+
+                $elibDB->relationOrganisationPublication($publication['id'], $organisation['id']);
+
 
                 if (empty($publication['authors'])) {
                     continue;
@@ -44,16 +51,18 @@ while (true) {
                         }
 
                         $elibDB->saveAuthor($author);
+                        $elibDB->relationAuthorPublication($publication['id'], $author['id']);
 
                         foreach ($author['organisations'] as $organisation_id) {
                             if (!$elibDB->checkExist('organisations', $organisation_id)) {
-                                $organisation = $elibCurl->getOrganisationInfo($organisation_id);
+                                $organisation1 = $elibCurl->getOrganisationInfo($organisation_id);
 
-                                if (empty($organisation)) {
+                                if (empty($organisation1)) {
                                     continue;
                                 }
 
-                                $elibDB->saveOrganisation($organisation);
+                                $elibDB->saveOrganisation($organisation1);
+                                $elibDB->relationOrganisationAuthor($author['id'], $organisation1['id']);
                             }
                         }
                     }
@@ -67,10 +76,10 @@ while (true) {
     $k++;
 }
 
-echo 'Информация об организации <>' . $info['name'] . '</b> Добавлена <hr>';
+echo 'Информация об организации <>' . $organisation['name'] . '</b> Добавлена <hr>';
 echo 'Время выполнения скрипта: ' . round(microtime(true) - $start, 4) . ' сек.';
 exit;
 
-?>
+
 
 
