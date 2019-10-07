@@ -4,6 +4,9 @@ function fetch($url, $z = null)
 {
     global $cookiePath;
 
+//  $proxy = '127.0.0.1:8888';
+//  $proxyauth = 'user:password';
+
     $result = '';
     try {
         $ch = curl_init();
@@ -18,6 +21,8 @@ function fetch($url, $z = null)
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_AUTOREFERER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        //curl_setopt($ch, CURLOPT_PROXYUSERPWD, $proxyauth);
+
 //
 //        if (isset($z['post'])) {
 //            curl_setopt($ch, CURLOPT_POST, true);
@@ -46,7 +51,6 @@ function fetch($url, $z = null)
 
     return $result;
 }
-
 
 
 /**
