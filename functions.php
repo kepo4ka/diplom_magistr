@@ -67,10 +67,8 @@ function save($p_data, $table, $primary = 'id')
     $columns = getColumnNames($table);
     $data = $db->filterArray($p_data, $columns);
 
-
-    if (checkExist($table, $data[$primary])) {
+    if (!checkExist($table, $data[$primary])) {
         $query = 'INSERT INTO ?n SET ?u';
-
         return $db->query($query, $table, $data);
     } else if (!empty($p_data[$primary])) {
         $query = 'UPDATE ?n SET ?u WHERE ?n=?i';
@@ -79,19 +77,31 @@ function save($p_data, $table, $primary = 'id')
     return true;
 }
 
+function saveRelation($p_data, $table)
+{
+    global $db;
+    if (empty($p_data)) {
+        return false;
+    }
+
+    $columns = getColumnNames($table);
+    $data = $db->filterArray($p_data, $columns);
+    $query = 'INSERT INTO ?n SET ?u';
+    return $db->query($query, $table, $data);
+}
+
 
 function fetch($url, $z = null)
 {
-    global $cookiePath, $def_proxy_info, $query_count, $delay_min, $delay_max;
+    global $cookiePath, $def_proxy_info, $current_user_agent;
 
-    $result = '';
     $ch = curl_init();
 
     if (!empty($z['params'])) {
         $url .= '?' . http_build_query($z['params']);
     }
 
-    $useragent = isset($z['useragent']) ? $z['useragent'] : 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:10.0.2) Gecko/20100101 Firefox/10.0.2';
+    $useragent = $current_user_agent;
 
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -104,7 +114,6 @@ function fetch($url, $z = null)
         curl_setopt($ch, CURLOPT_PROXY, $def_proxy_info['full']);
         curl_setopt($ch, CURLOPT_PROXYUSERPWD, $def_proxy_info['auth']);
     }
-
 
     if (isset($z['refer'])) {
         curl_setopt($ch, CURLOPT_REFERER, $z['refer']);
@@ -119,21 +128,40 @@ function fetch($url, $z = null)
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 //        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 
-    $query_count++;
     $result = curl_exec($ch);
     curl_close($ch);
 
+    return $result;
+}
 
-    echoBr($query_count . '. ' . $def_proxy_info['full']);
-    if ($query_count>20)
-    {
-        exit;
-    }
-
-    usleep(rand($delay_min, $delay_max));
+function fetchProxy($url, $z = null)
+{
+    global $query_count, $def_proxy_info, $delay_min, $delay_max;
     ProxyDB::update();
 
-    $query_count++;
+    $result = array();
+
+    $k = 1;
+    $t = 1;
+
+    while (empty($result)) {
+        if ($k > 3) {
+            return false;
+        }
+
+        if ($t > 2) {
+            echoBr('BAD PROXY: ' . json_encode($def_proxy_info['full']));
+            ProxyDB::update();
+        }
+
+        $result = fetch($url, $z);
+        echoBr($query_count . '. ' . json_encode($def_proxy_info['full']));
+        $query_count++;
+        $k++;
+        $t++;
+
+        usleep(rand($delay_min, $delay_max));
+    }
 
     return $result;
 }

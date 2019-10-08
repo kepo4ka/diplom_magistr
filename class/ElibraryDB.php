@@ -8,12 +8,6 @@ class ElibraryDB
     }
 
 
-
-
-
-
-
-
     function saveOrganisation($data)
     {
         $table = 'organisations';
@@ -45,7 +39,7 @@ class ElibraryDB
         ];
 
 
-        return save($data, $table);
+        return saveRelation($data, $table);
     }
 
     function relationAuthorPublication($publication_id, $author_id)
@@ -57,7 +51,7 @@ class ElibraryDB
             'authorid' => $author_id
         ];
 
-        return save($data, $table);
+        return saveRelation($data, $table);
     }
 
     function relationOrganisationAuthor($author_id, $organisation_id)
@@ -68,7 +62,7 @@ class ElibraryDB
             'orgsid' => $organisation_id,
             'authorid' => $author_id
         ];
-        return save($data, $table);
+        return saveRelation($data, $table);
     }
 
     function relationPublicationPublication($publication_id, $publication_id_origin)
@@ -79,7 +73,7 @@ class ElibraryDB
             'origin_publ_id' => $publication_id_origin,
             'end_publ_id' => $publication_id
         ];
-        return save($data, $table);
+        return saveRelation($data, $table);
     }
 
 }

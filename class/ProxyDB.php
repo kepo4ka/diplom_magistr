@@ -1,8 +1,9 @@
 <?php
-
+$curr_try = 0;
 
 class ProxyDB
 {
+
     function __construct()
     {
     }
@@ -76,13 +77,14 @@ class ProxyDB
 
     static function getElib()
     {
-        $url = 'https://elibrary.ru/org_about.asp?orgsid=4831';
-        $data = fetch($url);
+        $url = 'https://elibrary.ru';
+        $data = fetchProxy($url);
         if (empty($data)) {
             return false;
         }
 
         $is_ban = preg_match('/нарушения/m', $data);
+
 
         if ($is_ban) {
             return false;
@@ -93,28 +95,24 @@ class ProxyDB
     }
 
 
-    static function updateAgent()
-    {
-        global $cookiePath1, $proxy_list;
-        $proxy_list = self::getList();
-
-        self::update();
-        @unlink($cookiePath1);
-        return true;
-    }
-
     static function update()
     {
-        global $proxy_list, $def_proxy_info, $log, $cookiePath1;
+        global $proxy_list, $def_proxy_info, $log, $cookiePath1, $current_user_agent, $user_agents;
+
+
         if (empty($proxy_list)) {
             $proxy_list = self::getList();
         }
+
+
         $index = rand(0, count($proxy_list) - 1);
         $def_proxy_info = $proxy_list[$index];
-
         $log['proxy'] = $def_proxy_info;
+
+        $index = rand(0, count($user_agents) - 1);
+        $current_user_agent = $user_agents[$index];
         @unlink($cookiePath1);
-        return $def_proxy_info;
+        return true;
     }
 
 }

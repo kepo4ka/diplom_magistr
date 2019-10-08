@@ -9,7 +9,7 @@ include 'init.php';
 $elibCurl = new ElibraryCurl();
 $elibDB = new ElibraryDB();
 
-$org_id = 6254;
+$org_id = 54;
 
 $query_count = 0;
 
@@ -18,16 +18,15 @@ $list = array();
 $start = microtime(true);
 
 
-ProxyDB::update();
-
 $organisation = $elibCurl->getOrganisationInfo($org_id);
-
 $elibDB->saveOrganisation($organisation);
 
 $k = 1;
 
 while (true) {
     $org_publications = $elibCurl->getOrgPublications($org_id, $k);
+    echoVarDumpPre($org_publications);
+    
     if (!empty($org_publications)) {
         foreach ($org_publications as $publ_id) {
             if (!checkExist('publications', $publ_id)) {

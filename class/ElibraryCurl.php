@@ -17,7 +17,7 @@ class ElibraryCurl
     {
         $url = $this->base_url;
 
-        $parsed_html = fetch($url);
+        $parsed_html = fetchProxy($url);
 
         if (empty($parsed_html)) {
             return false;
@@ -36,7 +36,7 @@ class ElibraryCurl
             'login' => $this->login,
             'password' => $this->password
         ];
-        $parsed_html = fetch($url, $data);
+        $parsed_html = fetchProxy($url, $data);
         return $parsed_html;
     }
 
@@ -68,7 +68,7 @@ class ElibraryCurl
 
         $url = $this->base_url . '/' . 'org_about.asp';
         $data['params'] = ['orgsid' => $id];
-        $parsed_html = fetch($url, $data);
+        $parsed_html = fetchProxy($url, $data);
 
         $data = str_get_html($parsed_html);
 
@@ -132,7 +132,7 @@ class ElibraryCurl
         $url = $this->base_url . '/' . 'org_items.asp';
         $data['params'] = ['orgsid' => $id,
             'pagenum' => $page];
-        $parsed_html = fetch($url, $data);
+        $parsed_html = fetchProxy($url, $data);
 
         $data = str_get_html($parsed_html);
 
@@ -170,7 +170,7 @@ class ElibraryCurl
 
         $url = $this->base_url . '/' . 'item.asp';
         $data['params'] = ['id' => $id];
-        $parsed_html = fetch($url, $data);
+        $parsed_html = fetchProxy($url, $data);
 
         $data = str_get_html($parsed_html);
 
@@ -235,7 +235,7 @@ class ElibraryCurl
         $url = $this->base_url . '/' . 'get_item_refs.asp';
         $data['params'] = ['id' => $id,
             'rand' => jsRandom()];
-        $parsed_html = fetch($url, $data);
+        $parsed_html = fetchProxy($url, $data);
 
         $data = str_get_html($parsed_html);
 
@@ -265,7 +265,7 @@ class ElibraryCurl
 
         $url = $this->base_url . '/' . 'author_profile.asp';
         $data['params'] = ['authorid' => $id];
-        $parsed_html = fetch($url, $data);
+        $parsed_html = fetchProxy($url, $data);
 
         $data = str_get_html($parsed_html);
 
@@ -314,7 +314,7 @@ class ElibraryCurl
         $url = $this->base_url . '/' . 'author_items.asp';
         $data['params'] = ['authorid' => $id,
             'pagenum' => $pagenum];
-        $parsed_html = fetch($url, $data);
+        $parsed_html = fetchProxy($url, $data);
 
         $data = str_get_html($parsed_html);
 
