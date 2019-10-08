@@ -9,7 +9,7 @@ include 'init.php';
 $elibCurl = new ElibraryCurl();
 $elibDB = new ElibraryDB();
 
-$org_id = 5051;
+$org_id = 6254;
 
 $query_count = 0;
 
@@ -17,23 +17,12 @@ $list = array();
 
 $start = microtime(true);
 
-$url = 'https://google.ru/';
-
-$data = array();
-
-$data['full'] = '188.130.184.115:5500';
-$data['type'] = CURLPROXY_HTTP;
-$data['auth'] = 'OTDUKv:1wOOhI70Hq';
-
-
-$def_proxy_info = $data;
 
 ProxyDB::updateAgent();
 
-$k = 0;
 
-$organisation = $elibCurl->getOrganisationInfo($org_id);
-
+$organisation = ProxyDB::getGoogle();
+echoVarDumpPre($organisation);
 $elibDB->saveOrganisation($organisation);
 
 $k = 1;
@@ -96,7 +85,7 @@ while (true) {
     $k++;
 }
 
-echo "Количество запросов: " . $query_count . "<br>";
+echo "Количество запросов orgPublications: " . $query_count . "<br>";
 
 echo 'Информация об организации <>' . $organisation['name'] . '</b> Добавлена <hr>';
 echo 'Время выполнения скрипта: ' . round(microtime(true) - $start, 4) . ' сек.';

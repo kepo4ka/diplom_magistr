@@ -15,4 +15,5 @@ $def_proxy_info = array();
 
 $proxy_list = array();
 
+$query_count = 0;
 ?>

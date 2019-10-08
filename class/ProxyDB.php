@@ -12,11 +12,11 @@ class ProxyDB
         global $proxy_list;
 
         $proxy_list = array();
-        $url = 'http://localhost/proxy_list.txt/';
+        $url = 'http://localhost/proxy_list.txt';
 
         $data = fetchNoProxy($url);
 
-        $lines = preg_split('/\n/m', $data);
+        $lines = preg_split('/\n/m', trim($data));
 
         $proxy_info = array();
 
@@ -26,6 +26,7 @@ class ProxyDB
             $auth = $split[0];
             $proxy_info['full'] = $proxy;
             $proxy_info['auth'] = $auth;
+            $proxy_info['type'] = 0;
             $proxy_list[] = $proxy_info;
         }
 
@@ -95,7 +96,6 @@ class ProxyDB
     static function updateAgent()
     {
         global $cookiePath1, $proxy_list;
-        usleep(12000000, 35000000);
         $proxy_list = self::getList();
         self::update();
         @unlink($cookiePath1);
