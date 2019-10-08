@@ -21,7 +21,6 @@ $start = microtime(true);
 ProxyDB::update();
 
 $organisation = $elibCurl->getOrganisationInfo($org_id);
-echoVarDumpPre($organisation);
 
 $elibDB->saveOrganisation($organisation);
 
