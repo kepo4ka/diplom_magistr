@@ -17,7 +17,7 @@ $list = array();
 
 $start = microtime(true);
 
-$url = 'https://elibrary.ru/';
+$url = 'https://google.ru/';
 
 $data = array();
 
