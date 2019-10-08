@@ -164,21 +164,23 @@ class ElibraryCurl
         $publication['authors'] = array();
         $publication['refs'] = array();
 
-        if (!$this->checkLogin()) {
+//        if (!$this->checkLogin()) {
 //            $this->login();
-        }
+//        }
 
         $url = $this->base_url . '/' . 'item.asp';
         $data['params'] = ['id' => $id];
-        $parsed_html = fetchProxy($url, $data);
+        $parsed_html = fetch($url, $data);
 
         $data = str_get_html($parsed_html);
 
-        if (empty($data)) {
+        if (empty($parsed_html)) {
             return false;
         }
+
+
         $title = $data->find('.bigtext', 0)->plaintext;
-        $publication['title'] = @$title;
+        $publication['title'] = $title;
 
 
         $res = $data->find('table td[width=574][align=center]');
@@ -228,9 +230,9 @@ class ElibraryCurl
     {
         $ref_publications = array();
 
-        if (!$this->checkLogin()) {
+//        if (!$this->checkLogin()) {
 //            $this->login();
-        }
+//        }
 
         $url = $this->base_url . '/' . 'get_item_refs.asp';
         $data['params'] = ['id' => $id,

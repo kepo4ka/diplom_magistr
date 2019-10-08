@@ -17,6 +17,7 @@ $list = array();
 
 $start = microtime(true);
 
+echoVarDumpPre($elibCurl->getPublication());
 
 $organisation = $elibCurl->getOrganisationInfo($org_id);
 $elibDB->saveOrganisation($organisation);
@@ -30,6 +31,8 @@ while (true) {
         foreach ($org_publications as $publ_id) {
             if (!checkExist('publications', $publ_id)) {
                 $publication = $elibCurl->getPublication($publ_id);
+
+                echoVarDumpPre($publication);
                 if (empty($publication)) {
                     continue;
                 }

@@ -63,8 +63,11 @@ $proxy_list = array();
 
 $query_count = 0;
 
-$delay_min = 8000000;
-$delay_max = 12000000;
+//$delay_min = 8000000;
+//$delay_max = 12000000;
+
+$delay_min = 800000;
+$delay_max = 1200000;
 
 $max_try = 2;
 

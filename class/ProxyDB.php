@@ -111,7 +111,7 @@ class ProxyDB
 
         $index = rand(0, count($user_agents) - 1);
         $current_user_agent = $user_agents[$index];
-        @unlink($cookiePath1);
+//        @unlink($cookiePath1);
         return true;
     }
 

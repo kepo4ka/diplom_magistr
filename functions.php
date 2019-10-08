@@ -110,9 +110,9 @@ function fetch($url, $z = null)
     curl_setopt($ch, CURLOPT_TIMEOUT, 200); // http request timeout 20 seconds
 
     if (!empty($def_proxy_info)) {
-        curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
-        curl_setopt($ch, CURLOPT_PROXY, $def_proxy_info['full']);
-        curl_setopt($ch, CURLOPT_PROXYUSERPWD, $def_proxy_info['auth']);
+//        curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+//        curl_setopt($ch, CURLOPT_PROXY, $def_proxy_info['full']);
+//        curl_setopt($ch, CURLOPT_PROXYUSERPWD, $def_proxy_info['auth']);
     }
 
     if (isset($z['refer'])) {
@@ -137,7 +137,10 @@ function fetch($url, $z = null)
 function fetchProxy($url, $z = null)
 {
     global $query_count, $def_proxy_info, $delay_min, $delay_max;
-    ProxyDB::update();
+//    ProxyDB::update();
+
+    $result = fetch($url, $z);
+    return $result;
 
     $result = array();
 
@@ -149,18 +152,20 @@ function fetchProxy($url, $z = null)
             return false;
         }
 
-        if ($t > 2) {
-            echoBr('BAD PROXY: ' . json_encode($def_proxy_info['full']));
-            ProxyDB::update();
-        }
 
         $result = fetch($url, $z);
         echoBr($query_count . '. ' . json_encode($def_proxy_info['full']));
         $query_count++;
         $k++;
+
+
+        if ($t > 2) {
+            echoBr('BAD PROXY: ' . json_encode($def_proxy_info['full']));
+            ProxyDB::update();
+        }
         $t++;
 
-        usleep(rand($delay_min, $delay_max));
+//        usleep(rand($delay_min, $delay_max));
     }
 
     return $result;
