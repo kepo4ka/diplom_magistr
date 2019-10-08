@@ -9,7 +9,7 @@ include 'init.php';
 $elibCurl = new ElibraryCurl();
 $elibDB = new ElibraryDB();
 
-$org_id = 4851;
+$org_id = 5051;
 
 $query_count = 0;
 
@@ -24,36 +24,15 @@ $data = array();
 $data['full'] = '188.130.184.115:5500';
 $data['type'] = CURLPROXY_HTTP;
 $data['auth'] = 'OTDUKv:1wOOhI70Hq';
-$z['proxy'] = $data;
 
-$elib_res = fetch($url, $z);
 
-echoVarDumpPre($elib_res);
-
+$def_proxy_info = $data;
 
 ProxyDB::updateAgent();
 
 $k = 0;
 
-
-while (true) {
-    if ($k > 20) {
-        break;
-    }
-    $elib_res = ProxyDB::getGoogle();
-    if (strlen($elib_res)) {
-        $list[] = $def_proxy_info;
-    }
-
-    ProxyDB::update();
-    $k++;
-}
-
-echoBr('Время выполнения скрипта: ' . round(microtime(true) - $start, 4) . ' сек.');
-echoVarDumpPre($list);
-
-
-exit;
+$organisation = $elibCurl->getOrganisationInfo($org_id);
 
 $elibDB->saveOrganisation($organisation);
 
