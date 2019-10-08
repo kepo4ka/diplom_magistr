@@ -115,6 +115,10 @@ class ElibraryCurl
             }
         }
 
+        if (empty($organisation['name']))
+        {
+            echoVarDumpPre($parsed_html);
+        }
 
         $data->clear();
         return $organisation;

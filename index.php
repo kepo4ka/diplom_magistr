@@ -18,11 +18,11 @@ $list = array();
 $start = microtime(true);
 
 
-ProxyDB::updateAgent();
+ProxyDB::update();
 
-
-$organisation = ProxyDB::getGoogle();
+$organisation = $elibCurl->getOrganisationInfo($org_id);
 echoVarDumpPre($organisation);
+
 $elibDB->saveOrganisation($organisation);
 
 $k = 1;

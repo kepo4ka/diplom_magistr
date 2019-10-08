@@ -16,4 +16,9 @@ $def_proxy_info = array();
 $proxy_list = array();
 
 $query_count = 0;
+
+$delay_min = 4000000;
+$delay_max = 8000000;
+
+$log=array();
 ?>

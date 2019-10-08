@@ -22,11 +22,11 @@ class ProxyDB
 
         foreach ($lines as $line) {
             $split = explode('@', $line);
-            $proxy = $split[1];
-            $auth = $split[0];
+            $proxy = trim($split[1]);
+            $auth = trim($split[0]);
             $proxy_info['full'] = $proxy;
             $proxy_info['auth'] = $auth;
-            $proxy_info['type'] = 0;
+            $proxy_info['type'] = CURLPROXY_HTTP;
             $proxy_list[] = $proxy_info;
         }
 
@@ -97,6 +97,7 @@ class ProxyDB
     {
         global $cookiePath1, $proxy_list;
         $proxy_list = self::getList();
+
         self::update();
         @unlink($cookiePath1);
         return true;
@@ -104,12 +105,15 @@ class ProxyDB
 
     static function update()
     {
-        global $proxy_list, $def_proxy_info;
+        global $proxy_list, $def_proxy_info, $log, $cookiePath1;
         if (empty($proxy_list)) {
             $proxy_list = self::getList();
         }
-        $index = rand(0, count($proxy_list));
+        $index = rand(0, count($proxy_list) - 1);
         $def_proxy_info = $proxy_list[$index];
+
+        $log['proxy'] = $def_proxy_info;
+        @unlink($cookiePath1);
         return $def_proxy_info;
     }
 

@@ -82,60 +82,59 @@ function save($p_data, $table, $primary = 'id')
 
 function fetch($url, $z = null)
 {
-    global $cookiePath, $def_proxy_info, $query_count;
+    global $cookiePath, $def_proxy_info, $query_count, $delay_min, $delay_max;
 
     $result = '';
-    try {
-        $ch = curl_init();
+    $ch = curl_init();
 
-        if (!empty($z['params'])) {
-            $url .= '?' . http_build_query($z['params']);
-        }
-
-        $useragent = isset($z['useragent']) ? $z['useragent'] : 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:10.0.2) Gecko/20100101 Firefox/10.0.2';
-
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_AUTOREFERER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 200); // http request timeout 20 seconds
-
-        if (!empty($def_proxy_info)) {
-            curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
-            curl_setopt($ch, CURLOPT_PROXY, $def_proxy_info['full']);
-            curl_setopt($ch, CURLOPT_PROXYUSERPWD, $def_proxy_info['auth']);
-        }
-
-
-//
-//        if (isset($z['post'])) {
-//            curl_setopt($ch, CURLOPT_POST, true);
-//            curl_setopt($ch, CURLOPT_POSTFIELDS, $z['post']);
-//        }
-
-        if (isset($z['refer'])) {
-            curl_setopt($ch, CURLOPT_REFERER, $z['refer']);
-        }
-
-        curl_setopt($ch, CURLOPT_USERAGENT, $useragent);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, (isset($z['timeout']) ? $z['timeout'] : 5));
-        curl_setopt($ch, CURLOPT_COOKIEJAR, $cookiePath);
-        curl_setopt($ch, CURLOPT_COOKIEFILE, $cookiePath);
-
-        //https://stackoverflow.com/questions/8419747/php-curl-does-not-work-on-localhost
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-//        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-
-        $query_count++;
-        $result = curl_exec($ch);
-
-        curl_close($ch);
-    } catch (Exception $ex) {
-
+    if (!empty($z['params'])) {
+        $url .= '?' . http_build_query($z['params']);
     }
 
-//    usleep(rand(12200000, 25200000));
+    $useragent = isset($z['useragent']) ? $z['useragent'] : 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:10.0.2) Gecko/20100101 Firefox/10.0.2';
+
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_AUTOREFERER, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 200); // http request timeout 20 seconds
+
+    if (!empty($def_proxy_info)) {
+        curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+        curl_setopt($ch, CURLOPT_PROXY, $def_proxy_info['full']);
+        curl_setopt($ch, CURLOPT_PROXYUSERPWD, $def_proxy_info['auth']);
+    }
+
+
+    if (isset($z['refer'])) {
+        curl_setopt($ch, CURLOPT_REFERER, $z['refer']);
+    }
+
+    curl_setopt($ch, CURLOPT_USERAGENT, $useragent);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, (isset($z['timeout']) ? $z['timeout'] : 5));
+    curl_setopt($ch, CURLOPT_COOKIEJAR, $cookiePath);
+    curl_setopt($ch, CURLOPT_COOKIEFILE, $cookiePath);
+
+    //https://stackoverflow.com/questions/8419747/php-curl-does-not-work-on-localhost
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+//        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
     $query_count++;
+    $result = curl_exec($ch);
+    curl_close($ch);
+
+
+    echoBr($query_count . '. ' . $def_proxy_info['full']);
+    if ($query_count>20)
+    {
+        exit;
+    }
+
+    usleep(rand($delay_min, $delay_max));
+    ProxyDB::update();
+
+    $query_count++;
+
     return $result;
 }
 
@@ -257,10 +256,18 @@ function delApostrof($string)
 
 function echoVarDumpPre($var, $no_exit = false)
 {
+    global $log;
     echo '<pre>';
     var_dump($var);
     echo '</pre>';
 
+    echo '<hr>';
+    echo "log";
+    echo '<hr>';
+    echo '<pre>';
+    var_dump($log);
+    echo '</pre>';
+    echo '<hr>';
     if (!$no_exit) {
         exit;
     }
