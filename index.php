@@ -25,8 +25,7 @@ $k = 1;
 
 while (true) {
     $org_publications = $elibCurl->getOrgPublications($org_id, $k);
-    echoVarDumpPre($org_publications);
-    
+
     if (!empty($org_publications)) {
         foreach ($org_publications as $publ_id) {
             if (!checkExist('publications', $publ_id)) {
