@@ -9,7 +9,7 @@ $elibrary_config = [
 ];
 
 $proxy_active = true;
-$proxy_url = 'https://api.getproxylist.com/proxy';
+$proxy_url = 'http://127.0.0.1:1000/';
 
 $def_proxy_info = array();
 

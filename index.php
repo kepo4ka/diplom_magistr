@@ -9,15 +9,52 @@ include 'init.php';
 $elibCurl = new ElibraryCurl();
 $elibDB = new ElibraryDB();
 
-$org_id = 5051;
+$org_id = 4851;
 
 $query_count = 0;
 
+$list = array();
 
 $start = microtime(true);
 
-//updateAgent();
-$organisation = $elibCurl->getOrganisationInfo();
+$url = 'https://elibrary.ru/';
+
+$data = array();
+
+$data['full'] = '188.130.184.115:5500';
+$data['type'] = CURLPROXY_HTTP;
+$data['auth'] = 'OTDUKv:1wOOhI70Hq';
+$z['proxy'] = $data;
+
+$elib_res = fetch($url, $z);
+
+echoVarDumpPre($elib_res);
+
+
+ProxyDB::updateAgent();
+
+$k = 0;
+
+
+while (true) {
+    if ($k > 20) {
+        break;
+    }
+    $elib_res = ProxyDB::getGoogle();
+    if (strlen($elib_res)) {
+        $list[] = $def_proxy_info;
+    }
+
+    ProxyDB::update();
+    $k++;
+}
+
+echoBr('Время выполнения скрипта: ' . round(microtime(true) - $start, 4) . ' сек.');
+echoVarDumpPre($list);
+
+
+exit;
+
 $elibDB->saveOrganisation($organisation);
 
 $k = 1;
@@ -26,7 +63,7 @@ while (true) {
     $org_publications = $elibCurl->getOrgPublications($org_id, $k);
     if (!empty($org_publications)) {
         foreach ($org_publications as $publ_id) {
-            if (!$elibDB->checkExist('publications', $publ_id)) {
+            if (!checkExist('publications', $publ_id)) {
                 $publication = $elibCurl->getPublication($publ_id);
                 if (empty($publication)) {
                     continue;
@@ -47,7 +84,7 @@ while (true) {
 
                 foreach ($publication['authors'] as $author_id) {
 
-                    if (!$elibDB->checkExist('authors', $author_id)) {
+                    if (!checkExist('authors', $author_id)) {
                         $author = $elibCurl->getAuthorInfo($author_id);
 
                         if (empty($author)) {
@@ -58,7 +95,7 @@ while (true) {
                         $elibDB->relationAuthorPublication($publication['id'], $author['id']);
 
                         foreach ($author['organisations'] as $organisation_id) {
-                            if (!$elibDB->checkExist('organisations', $organisation_id)) {
+                            if (!checkExist('organisations', $organisation_id)) {
                                 $organisation1 = $elibCurl->getOrganisationInfo($organisation_id);
 
                                 if (empty($organisation1)) {

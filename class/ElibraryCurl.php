@@ -16,20 +16,16 @@ class ElibraryCurl
     function getHome()
     {
         $url = $this->base_url;
-        return fetch($url);
+
+        $parsed_html = fetch($url);
+
+        if (empty($parsed_html)) {
+            return false;
+        }
+
+        return preg_match('/eLIBRARY.RU - НАУЧНАЯ ЭЛЕКТРОННАЯ БИБЛИОТЕКА/m', $parsed_html);
     }
 
-    function getGoogle()
-    {
-        $url = 'https://google.ru/';
-        return fetch($url);
-    }
-
-    function get2ip()
-    {
-        $url = 'https://2ip.ru/';
-        return fetch($url);
-    }
 
 
     function login()
@@ -59,7 +55,7 @@ class ElibraryCurl
         clearCookie();
     }
 
-    function getOrganisationInfo($id = 5051)
+    function getOrganisationInfo($id = 4851)
     {
         $organisation = array();
         $organisation['id'] = $id;
@@ -174,7 +170,9 @@ class ElibraryCurl
 
         $data = str_get_html($parsed_html);
 
-
+        if (empty($data)) {
+            return false;
+        }
         $title = $data->find('.bigtext', 0)->plaintext;
         $publication['title'] = @$title;
 

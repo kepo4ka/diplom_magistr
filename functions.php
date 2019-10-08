@@ -48,33 +48,37 @@ function getProxy()
 }
 
 
-function getProxyList()
+function checkExist($table, $value)
 {
-    global $proxy_list;
-    $url = 'https://www.proxy-list.download/api/v1/get?type=http';
-
-    $data = fetch($url);
-
-    $proxy_list = preg_split('/\n/m', $data);
-
-    return $proxy_list;
+    global $db;
+    $query = "SELECT `id` FROM ?n WHERE `id`=?i LIMIT 1";
+    $is_exist = $db->getOne($query, $table, $value);
+    return $is_exist;
 }
 
 
-function updateAgent()
+function save($p_data, $table, $primary = 'id')
 {
-    global $cookiePath1, $def_proxy_info;
+    global $db;
+    if (empty($p_data)) {
+        return false;
+    }
+
+    $columns = getColumnNames($table);
+    $data = $db->filterArray($p_data, $columns);
 
 
-//        $def_proxy_info = getProxy();
-    $proxy_list = getProxyList();
-    $index = rand(0, count($proxy_list) - 1);
-    $def_proxy_info['full'] = $proxy_list[$index];
-    $def_proxy_info['type'] = CURLPROXY_HTTP;
-    @unlink($cookiePath1);
+    if (checkExist($table, $data[$primary])) {
+        $query = 'INSERT INTO ?n SET ?u';
 
+        return $db->query($query, $table, $data);
+    } else if (!empty($p_data[$primary])) {
+        $query = 'UPDATE ?n SET ?u WHERE ?n=?i';
+        return $db->query($query, $table, $data, $primary, $data[$primary]);
+    }
     return true;
 }
+
 
 function fetch($url, $z = null)
 {
@@ -96,10 +100,10 @@ function fetch($url, $z = null)
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, 200); // http request timeout 20 seconds
 
-        if (!empty($def_proxy_info)) {
-            curl_setopt($ch, CURLOPT_PROXYTYPE, $def_proxy_info['type']);
-            curl_setopt($ch, CURLOPT_PROXY, $def_proxy_info['full']);
-//        curl_setopt($ch, CURLOPT_PROXYUSERPWD, $proxyauth);
+        if (!empty($z['proxy'])) {
+            curl_setopt($ch, CURLOPT_PROXYTYPE, $z['proxy']['type']);
+            curl_setopt($ch, CURLOPT_PROXY, $z['proxy']['full']);
+            curl_setopt($ch, CURLOPT_PROXYUSERPWD, $z['proxy']['auth']);
         }
 
 
@@ -130,8 +134,51 @@ function fetch($url, $z = null)
 
     }
 
-    usleep(rand(210304, 5503146));
+//    usleep(rand(210304, 5503146));
     $query_count++;
+    return $result;
+}
+
+
+function fetchNoProxy($url, $z = null)
+{
+    global $cookiePath;
+
+    $result = '';
+    try {
+        $ch = curl_init();
+
+        if (!empty($z['params'])) {
+            $url .= '?' . http_build_query($z['params']);
+        }
+
+        $useragent = isset($z['useragent']) ? $z['useragent'] : 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:10.0.2) Gecko/20100101 Firefox/10.0.2';
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_AUTOREFERER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 200); // http request timeout 20 seconds
+
+        if (isset($z['refer'])) {
+            curl_setopt($ch, CURLOPT_REFERER, $z['refer']);
+        }
+
+        curl_setopt($ch, CURLOPT_USERAGENT, $useragent);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, (isset($z['timeout']) ? $z['timeout'] : 5));
+        curl_setopt($ch, CURLOPT_COOKIEJAR, $cookiePath);
+        curl_setopt($ch, CURLOPT_COOKIEFILE, $cookiePath);
+
+        //https://stackoverflow.com/questions/8419747/php-curl-does-not-work-on-localhost
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+        $result = curl_exec($ch);
+
+        curl_close($ch);
+    } catch (Exception $ex) {
+
+    }
+
     return $result;
 }
 
@@ -208,13 +255,21 @@ function delApostrof($string)
     return $string;
 }
 
-function echoVarDumpPre($var)
+function echoVarDumpPre($var, $no_exit = false)
 {
     echo '<pre>';
-//    echo json_encode($var);
     var_dump($var);
     echo '</pre>';
-    exit;
+
+    if (!$no_exit) {
+        exit;
+    }
 }
 
+
+function echoBr($var)
+{
+    echo json_encode($var, JSON_UNESCAPED_UNICODE);
+    echo '<hr>';
+}
 
