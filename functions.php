@@ -73,7 +73,7 @@ function fetch($url, $z = null)
     curl_setopt($ch, CURLOPT_TIMEOUT, 200); // http request timeout 20 seconds
 
     if (!empty($def_proxy_info)) {
-        curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+        curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
         curl_setopt($ch, CURLOPT_PROXY, $def_proxy_info['full']);
         curl_setopt($ch, CURLOPT_PROXYUSERPWD, $def_proxy_info['auth']);
     }
