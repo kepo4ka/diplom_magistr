@@ -2,16 +2,14 @@
 
 include 'init.php';
 
+clearLog();
 
-//exit;
-
-//$elib = new ElibraryParser();
 $elibCurl = new ElibraryCurl();
 $elibDB = new ElibraryDB();
 
-$org_id = 54;
+$org_id = 1273;
 
-$query_count = 0;
+$query_count = 1;
 
 $list = array();
 
@@ -19,10 +17,13 @@ $start = microtime(true);
 
 ProxyDB::update();
 
+arrayLog('Work Started', 'Start');
+arrayLog($def_proxy_info['full'], 'First Proxy');
+
 
 $organisation = $elibCurl->getOrganisationInfo($org_id);
-
 $elibDB->saveOrganisation($organisation);
+
 
 $k = 1;
 
@@ -34,6 +35,7 @@ while (true) {
             if (!checkExist('publications', $publ_id)) {
                 $publication = $elibCurl->getPublication($publ_id);
 
+                echoVarDumpPre($publication);
 
                 if (empty($publication)) {
                     continue;
@@ -79,13 +81,6 @@ while (true) {
                     }
                 }
             }
-            if ($query_count > 15) {
-                echo "querycount - Количество запросов orgPublications: " . $query_count . "<br>";
-
-                echo 'Информация об организации <>' . $organisation['name'] . '</b> Добавлена <hr>';
-                echo 'Время выполнения скрипта: ' . round(microtime(true) - $start, 4) . ' сек.';
-                exit;
-            }
         }
 
     } else {
@@ -94,10 +89,10 @@ while (true) {
     $k++;
 }
 
-echo "Количество запросов orgPublications: " . $query_count . "<br>";
+arrayLog($query_count, 'Количество запросов');
+arrayLog('Информация об организация <strong>' . $organisation['name'] . '</strong> Добавлена', 'Информация об организации');
+arrayLog('Время выполнения скрипта: ' . round(microtime(true) - $start, 4) . ' сек.', 'Время выполнения скрипта');
 
-echo 'Информация об организации <>' . $organisation['name'] . '</b> Добавлена <hr>';
-echo 'Время выполнения скрипта: ' . round(microtime(true) - $start, 4) . ' сек.';
 exit;
 
 

@@ -97,7 +97,7 @@ class ProxyDB
 
     static function update()
     {
-        global $proxy_list, $def_proxy_info, $log, $cookiePath1, $current_user_agent, $user_agents;
+        global $proxy_list, $def_proxy_info, $cookiePath1, $current_user_agent, $user_agents;
 
 
         if (empty($proxy_list)) {
@@ -107,8 +107,6 @@ class ProxyDB
 
         $index = rand(0, count($proxy_list) - 1);
         $def_proxy_info = $proxy_list[$index];
-        $log['proxy'] = $def_proxy_info;
-
         $index = rand(0, count($user_agents) - 1);
         $current_user_agent = $user_agents[$index];
         @unlink($cookiePath1);

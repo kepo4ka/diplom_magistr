@@ -104,7 +104,14 @@ function fetchProxy($url, $z = null)
     global $query_count, $def_proxy_info, $delay_min, $delay_max;
 
     if ($query_count % 5 == 0 || $query_count % 9 == 0) {
+        $log['type'] = "Good Update Proxy";
+        $log['old_proxy'] = $def_proxy_info['full'];
+
         ProxyDB::update();
+
+        $log['new_proxy'] = $def_proxy_info['full'];
+
+        arrayLog($log, 'Good Update Proxy');
     }
 
     $result = array();
@@ -118,15 +125,20 @@ function fetchProxy($url, $z = null)
             return false;
         }
 
-
         $result = fetch($url, $z);
-        echoBr($query_count . '. ' . json_encode($def_proxy_info['full']));
+
+        $log = $query_count . '. ' . $def_proxy_info['full'] . ' - ' . $url;
+        arrayLog($log, 'Usual Request', 'secondary');
+
         $query_count++;
         $k++;
 
-
         if ($t > 2) {
-            echoBr('BAD PROXY: ' . json_encode($def_proxy_info['full']));
+            $log = array();
+            $log['proxy'] = $def_proxy_info['full'];
+            $log['url'] = $url;
+            arrayLog($log, 'Bad Proxy', 'error');
+
             ProxyDB::update();
             $t = 1;
         }
@@ -138,6 +150,41 @@ function fetchProxy($url, $z = null)
     return $result;
 }
 
+function arrayLog($data, $title = 'Info', $type = 'info')
+{
+    global $log_path;
+
+    $old = array();
+    @$old = json_decode(file_get_contents($log_path), true);
+
+
+    $element = array();
+    $element['date'] = date('Y-m-d H:i:s');
+    $element['content'] = print_r($data, true);
+    $element['json'] = json_encode($data);
+    $element['type'] = $type;
+    $element['title'] = $title;
+
+    if (empty($old)) {
+        $old[] = $element;
+    } else {
+        array_unshift($old, $element);
+
+        if (count($old) > 1000) {
+            $old = array();
+        }
+    }
+
+    file_put_contents($log_path, json_encode($old, JSON_UNESCAPED_UNICODE), LOCK_EX);
+}
+
+
+
+function clearLog()
+{
+    global $log_path;
+    @unlink($log_path);
+}
 
 function fetchNoProxy($url, $z = null)
 {
@@ -256,18 +303,9 @@ function delApostrof($string)
 
 function echoVarDumpPre($var, $no_exit = false)
 {
-    global $log;
     echo '<pre>';
     var_dump($var);
     echo '</pre>';
-
-    echo '<hr>';
-    echo "log";
-    echo '<hr>';
-    echo '<pre>';
-    var_dump($log);
-    echo '</pre>';
-    echo '<hr>';
     if (!$no_exit) {
         exit;
     }
