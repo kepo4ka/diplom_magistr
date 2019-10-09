@@ -102,16 +102,16 @@ function fetch($url, $z = null)
 function fetchProxy($url, $z = null)
 {
     global $query_count, $def_proxy_info, $delay_min, $delay_max;
-//    ProxyDB::update();
+
+    if ($query_count % 5 == 0 || $query_count % 9 == 0) {
+        ProxyDB::update();
+    }
 
     $result = array();
 
     $k = 1;
     $t = 1;
 
-    if ($query_count > 10) {
-        exit;
-    }
 
     while (empty($result)) {
         if ($k > 3) {

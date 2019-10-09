@@ -22,8 +22,6 @@ ProxyDB::update();
 
 $organisation = $elibCurl->getOrganisationInfo($org_id);
 
-echoVarDumpPre(getIpReg($elibCurl->getHome()));
-
 $elibDB->saveOrganisation($organisation);
 
 $k = 1;
@@ -80,6 +78,13 @@ while (true) {
                         }
                     }
                 }
+            }
+            if ($query_count > 15) {
+                echo "querycount - Количество запросов orgPublications: " . $query_count . "<br>";
+
+                echo 'Информация об организации <>' . $organisation['name'] . '</b> Добавлена <hr>';
+                echo 'Время выполнения скрипта: ' . round(microtime(true) - $start, 4) . ' сек.';
+                exit;
             }
         }
 

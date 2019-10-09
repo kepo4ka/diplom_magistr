@@ -169,7 +169,7 @@ class ElibraryCurl
 
         $url = $this->base_url . '/' . 'item.asp';
         $data['params'] = ['id' => $id];
-        $parsed_html = fetch($url, $data);
+        $parsed_html = fetchProxy($url, $data);
 
         $data = str_get_html($parsed_html);
 
