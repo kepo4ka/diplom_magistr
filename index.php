@@ -34,7 +34,6 @@ arrayLog($def_proxy_info['full'], 'First Proxy');
 
 
 $organisation = $elibCurl->getOrganisationInfo($org_id);
-echoVarDumpPre($organisation);
 
 $elibDB->saveOrganisation($organisation);
 
