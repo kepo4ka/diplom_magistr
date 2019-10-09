@@ -173,7 +173,7 @@ class ElibraryCurl
 
         $data = str_get_html($parsed_html);
 
-        if (empty($parsed_html)) {
+        if (empty($parsed_html) || empty($data)) {
             return false;
         }
 
