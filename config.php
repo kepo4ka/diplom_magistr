@@ -56,4 +56,6 @@ $delay_max = 1200000;
 $max_try = 2;
 
 $log = array();
+
+$log_path = 'log.log';
 ?>
