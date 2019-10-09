@@ -51,7 +51,7 @@ $query_count = 0;
 //$delay_max = 12000000;
 
 $delay_min = 6000000;
-$delay_max = 13300000;
+$delay_max = 20300000;
 
 $max_try = 2;
 
