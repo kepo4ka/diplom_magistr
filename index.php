@@ -4,6 +4,7 @@ include 'init.php';
 
 clearLog();
 
+
 $elibCurl = new ElibraryCurl();
 $elibDB = new ElibraryDB();
 

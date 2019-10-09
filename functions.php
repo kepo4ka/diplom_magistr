@@ -144,7 +144,11 @@ function fetchProxy($url, $z = null)
         }
         $t++;
 
-//        usleep(rand($delay_min, $delay_max));
+        $sleep_time = rand($delay_min, $delay_max);
+        $sleep_time_seconds = round($sleep_time / 1000000);
+
+        arrayLog('Sleep ' . $sleep_time_seconds . 's', 'Sleep ' . $sleep_time_seconds . 's', 'warning');
+        usleep($sleep_time);
     }
 
     return $result;
@@ -177,7 +181,6 @@ function arrayLog($data, $title = 'Info', $type = 'info')
 
     file_put_contents($log_path, json_encode($old, JSON_UNESCAPED_UNICODE), LOCK_EX);
 }
-
 
 
 function clearLog()

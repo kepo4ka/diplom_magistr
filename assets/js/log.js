@@ -65,6 +65,9 @@ $(document).ready(function () {
             case 'secondary':
                 $new_item.find('.shablon__title').addClass('text-secondary');
                 break;
+            case 'warning':
+                $new_item.find('.shablon__title').addClass('text-warning');
+                break;
         }
 
 
