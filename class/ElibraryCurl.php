@@ -22,10 +22,10 @@ class ElibraryCurl
         if (empty($parsed_html)) {
             return false;
         }
+        return $parsed_html;
 
         return preg_match('/eLIBRARY.RU - НАУЧНАЯ ЭЛЕКТРОННАЯ БИБЛИОТЕКА/m', $parsed_html);
     }
-
 
 
     function login()
@@ -115,8 +115,7 @@ class ElibraryCurl
             }
         }
 
-        if (empty($organisation['name']))
-        {
+        if (empty($organisation['name'])) {
             echoVarDumpPre($parsed_html);
         }
 

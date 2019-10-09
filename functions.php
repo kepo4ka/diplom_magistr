@@ -1,52 +1,5 @@
 <?php
 
-function getProxy()
-{
-    global $proxy_url;
-
-
-    try {
-
-        $proxy_info = json_decode(fetch($proxy_url), true);
-
-        $type = '';
-
-        if (empty($proxy_info['protocol'])) {
-            return false;
-        }
-
-        switch ($proxy_info['protocol']) {
-            case 'http':
-                $type = CURLPROXY_HTTP;
-                break;
-            case 'socks4':
-                $type = CURLPROXY_SOCKS4;
-                break;
-            case 'socks4a':
-                $type = CURLPROXY_SOCKS4A;
-                break;
-            case 'socks5':
-                $type = CURLPROXY_SOCKS5;
-                break;
-        }
-
-        if (empty($type)) {
-            sleep(rand(1, 3));
-            return getProxy();
-        }
-
-        $proxy_info['type'] = $type;
-
-
-        $proxy_info['full'] = $proxy_info['ip'] . ':' . $proxy_info['port'];
-
-        return $proxy_info;
-
-    } catch (Exception $exception) {
-        return false;
-    }
-}
-
 
 function checkExist($table, $value)
 {
@@ -56,6 +9,16 @@ function checkExist($table, $value)
     return $is_exist;
 }
 
+function getIpReg($str)
+{
+    $matches = array();
+    preg_match('/\b(?:\d{1,3}\.){3}\d{1,3}\b/m', $str, $matches);
+
+    if (!empty($matches[0])) {
+        return $matches[0];
+    }
+    return false;
+}
 
 function save($p_data, $table, $primary = 'id')
 {
@@ -110,15 +73,16 @@ function fetch($url, $z = null)
     curl_setopt($ch, CURLOPT_TIMEOUT, 200); // http request timeout 20 seconds
 
     if (!empty($def_proxy_info)) {
-//        curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
-//        curl_setopt($ch, CURLOPT_PROXY, $def_proxy_info['full']);
-//        curl_setopt($ch, CURLOPT_PROXYUSERPWD, $def_proxy_info['auth']);
+        curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+        curl_setopt($ch, CURLOPT_PROXY, $def_proxy_info['full']);
+        curl_setopt($ch, CURLOPT_PROXYUSERPWD, $def_proxy_info['auth']);
     }
 
     if (isset($z['refer'])) {
         curl_setopt($ch, CURLOPT_REFERER, $z['refer']);
     }
 
+//    echoVarDumpPre($useragent);
     curl_setopt($ch, CURLOPT_USERAGENT, $useragent);
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, (isset($z['timeout']) ? $z['timeout'] : 5));
     curl_setopt($ch, CURLOPT_COOKIEJAR, $cookiePath);
@@ -134,18 +98,20 @@ function fetch($url, $z = null)
     return $result;
 }
 
+
 function fetchProxy($url, $z = null)
 {
     global $query_count, $def_proxy_info, $delay_min, $delay_max;
 //    ProxyDB::update();
 
-    $result = fetch($url, $z);
-    return $result;
-
     $result = array();
 
     $k = 1;
     $t = 1;
+
+    if ($query_count > 10) {
+        exit;
+    }
 
     while (empty($result)) {
         if ($k > 3) {
@@ -162,6 +128,7 @@ function fetchProxy($url, $z = null)
         if ($t > 2) {
             echoBr('BAD PROXY: ' . json_encode($def_proxy_info['full']));
             ProxyDB::update();
+            $t = 1;
         }
         $t++;
 

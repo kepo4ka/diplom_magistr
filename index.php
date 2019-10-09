@@ -17,9 +17,13 @@ $list = array();
 
 $start = microtime(true);
 
-echoVarDumpPre($elibCurl->getPublication());
+ProxyDB::update();
+
 
 $organisation = $elibCurl->getOrganisationInfo($org_id);
+
+echoVarDumpPre(getIpReg($elibCurl->getHome()));
+
 $elibDB->saveOrganisation($organisation);
 
 $k = 1;
@@ -32,7 +36,7 @@ while (true) {
             if (!checkExist('publications', $publ_id)) {
                 $publication = $elibCurl->getPublication($publ_id);
 
-                echoVarDumpPre($publication);
+
                 if (empty($publication)) {
                     continue;
                 }
