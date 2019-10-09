@@ -104,11 +104,8 @@ function fetchProxy($url, $z = null)
     global $query_count, $def_proxy_info, $delay_min, $delay_max;
 
     if ($query_count % 5 == 0 || $query_count % 9 == 0) {
-        $log['type'] = "Good Update Proxy";
         $log['old_proxy'] = $def_proxy_info['full'];
-
         ProxyDB::update();
-
         $log['new_proxy'] = $def_proxy_info['full'];
 
         arrayLog($log, 'Good Update Proxy');
@@ -156,11 +153,14 @@ function fetchProxy($url, $z = null)
 
 function arrayLog($data, $title = 'Info', $type = 'info')
 {
-    global $log_path;
+    global $log_path, $proccess_id;
 
     $old = array();
     @$old = json_decode(file_get_contents($log_path), true);
 
+    if (!empty($old) && count($old) > 200) {
+        array_pop($old);
+    }
 
     $element = array();
     $element['date'] = date('Y-m-d H:i:s');
@@ -168,25 +168,15 @@ function arrayLog($data, $title = 'Info', $type = 'info')
     $element['json'] = json_encode($data);
     $element['type'] = $type;
     $element['title'] = $title;
+    $element['proccess'] = $proccess_id;
 
     if (empty($old)) {
         $old[] = $element;
     } else {
         array_unshift($old, $element);
-
-        if (count($old) > 1000) {
-            $old = array();
-        }
     }
 
     file_put_contents($log_path, json_encode($old, JSON_UNESCAPED_UNICODE), LOCK_EX);
-}
-
-
-function clearLog()
-{
-    global $log_path;
-    @unlink($log_path);
 }
 
 function fetchNoProxy($url, $z = null)

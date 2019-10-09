@@ -13,6 +13,7 @@
 
     <script defer src="assets/lib/jquery/jquery-3.3.1.min.js"></script>
     <script defer src="assets/lib/bootstrap4/bootstrap.bundle.min.js"></script>
+    <script defer src="assets/lib/color-hash/color-hash.js"></script>
 
     <script defer src="assets/js/log.js"></script>
 
@@ -41,8 +42,8 @@
                     <li class="timeline__shablon shablon d-none">
                         <a class="shablon__title font-weight-bold" href="#"></a>
                         <a href="#" class="float-right shablon__date">
-
                         </a>
+                        <a class="shablon__proccess badge badge-pill badge-success" href="#"></a>
                         <p class="shablon__content">
 
                         </p>

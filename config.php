@@ -58,4 +58,6 @@ $max_try = 2;
 $log = array();
 
 $log_path = 'log.log';
+
+$proccess_id = '';
 ?>

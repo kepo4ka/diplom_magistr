@@ -35,7 +35,6 @@ $(document).ready(function () {
                         if (updating) {
                             const data = JSON.parse(response);
                             $timeline.html('');
-                            console.log(data);
                             for (let i = 0; i < data.length; i++) {
                                 insertListItem(data[i], i);
                             }
@@ -56,8 +55,16 @@ $(document).ready(function () {
 
         $new_item.find('.shablon__title').text(item_info['title']);
 
-        switch (item_info['type'])
+        if (item_info['type'] == 'start')
         {
+            $new_item.addClass('bg-light');
+        }
+
+        $new_item.find('.shablon__proccess').text(item_info['proccess']);
+        const color = hashStringToColor(item_info['proccess']);
+        $new_item.find('.shablon__proccess').css('background', color);
+
+        switch (item_info['type']) {
             case 'error':
                 $new_item.find('.shablon__title').addClass('text-danger');
                 break;
@@ -71,7 +78,6 @@ $(document).ready(function () {
         }
 
 
-
         $new_item.find('.shablon__date').text(item_info['date']);
         $new_item.find('.shablon__content').text(item_info['content']);
 
@@ -80,3 +86,27 @@ $(document).ready(function () {
 
 
 });
+
+
+function djb2(str) {
+    let hash = 5381;
+    try {
+        for (let i = 0; i < str.length; i++) {
+            hash = ((hash << 5) + hash) + str.charCodeAt(i);
+            /* hash * 33 + c */
+        }
+    }
+    catch (e) {
+
+    }
+    return hash;
+}
+
+function hashStringToColor(str) {
+
+    const hash = djb2(str);
+    const r = (hash & 0xFF0000) >> 16;
+    const g = (hash & 0x00FF00) >> 8;
+    const b = hash & 0x0000FF;
+    return "#" + ("0" + r.toString(16)).substr(-2) + ("0" + g.toString(16)).substr(-2) + ("0" + b.toString(16)).substr(-2);
+}

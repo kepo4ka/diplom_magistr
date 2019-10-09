@@ -2,13 +2,18 @@
 
 include 'init.php';
 
-clearLog();
 
+$proccess_id = substr(md5(microtime()), 0, 5);
 
 $elibCurl = new ElibraryCurl();
 $elibDB = new ElibraryDB();
 
 $org_id = 1273;
+
+if (!empty($_REQUEST['org_id'])) {
+    $org_id = preg_replace('/[^\d]+/m', '', $_REQUEST['org_id']);
+}
+
 
 $query_count = 1;
 
@@ -18,11 +23,13 @@ $start = microtime(true);
 
 ProxyDB::update();
 
-arrayLog('Work Started', 'Start');
+arrayLog('Work Started', 'Start', 'start');
 arrayLog($def_proxy_info['full'], 'First Proxy');
 
 
 $organisation = $elibCurl->getOrganisationInfo($org_id);
+echoVarDumpPre($organisation);
+
 $elibDB->saveOrganisation($organisation);
 
 
