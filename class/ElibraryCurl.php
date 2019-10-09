@@ -130,6 +130,7 @@ class ElibraryCurl
 
         $url = $this->base_url . '/' . 'org_items.asp';
         $data['params'] = ['orgsid' => $id,
+            'show_option' => '0',
             'pagenum' => $page];
         $parsed_html = fetchProxy($url, $data);
 
