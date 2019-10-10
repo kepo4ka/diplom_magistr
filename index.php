@@ -14,11 +14,18 @@ if (!empty($_REQUEST['org_id'])) {
     $org_id = preg_replace('/[^\d]+/m', '', $_REQUEST['org_id']);
 }
 
-if (empty($_REQUEST['start']))
-{
+if (empty($_REQUEST['start'])) {
     echo "Недостаточно прав.";
     exit;
 }
+
+
+$filter = array();
+$filter['publicationid'] =
+$filter['publicationid'] =
+
+$res = checkExistMulti('publications_to_authors', $filter);
+echoVarDumpPre($res);
 
 
 $query_count = 1;
@@ -53,46 +60,49 @@ while (true) {
                 }
 
                 $elibDB->savePublication($publication);
+            } else {
+                $publication = $elibDB->getPublication($publ_id);
+            }
 
-                foreach ($publication['refs'] as $ref) {
-                    $elibDB->relationPublicationPublication($ref, $publication['id']);
-                }
+            foreach ($publication['refs'] as $ref) {
+                $elibDB->relationPublicationPublication($ref, $publication['id']);
+            }
 
-                $elibDB->relationOrganisationPublication($publication['id'], $organisation['id']);
+            $elibDB->relationOrganisationPublication($publication['id'], $organisation['id']);
 
 
-                if (empty($publication['authors'])) {
-                    continue;
-                }
+            if (empty($publication['authors'])) {
+                continue;
+            }
 
-                foreach ($publication['authors'] as $author_id) {
+            foreach ($publication['authors'] as $author_id) {
 
-                    if (!checkExist('authors', $author_id)) {
-                        $author = $elibCurl->getAuthorInfo($author_id);
+                if (!checkExist('authors', $author_id)) {
+                    $author = $elibCurl->getAuthorInfo($author_id);
 
-                        if (empty($author)) {
-                            continue;
-                        }
+                    if (empty($author)) {
+                        continue;
+                    }
 
-                        $elibDB->saveAuthor($author);
-                        $elibDB->relationAuthorPublication($publication['id'], $author['id']);
+                    $elibDB->saveAuthor($author);
+                    $elibDB->relationAuthorPublication($publication['id'], $author['id']);
 
-                        foreach ($author['organisations'] as $organisation_id) {
-                            if (!checkExist('organisations', $organisation_id)) {
-                                $organisation1 = $elibCurl->getOrganisationInfo($organisation_id);
+                    foreach ($author['organisations'] as $organisation_id) {
+                        if (!checkExist('organisations', $organisation_id)) {
+                            $organisation1 = $elibCurl->getOrganisationInfo($organisation_id);
 
-                                if (empty($organisation1)) {
-                                    continue;
-                                }
-
-                                $elibDB->saveOrganisation($organisation1);
-                                $elibDB->relationOrganisationAuthor($author['id'], $organisation1['id']);
+                            if (empty($organisation1)) {
+                                continue;
                             }
+
+                            $elibDB->saveOrganisation($organisation1);
+                            $elibDB->relationOrganisationAuthor($author['id'], $organisation1['id']);
                         }
                     }
                 }
             }
         }
+
 
     } else {
         break;

@@ -21,6 +21,50 @@ class ElibraryDB
         return save($data, $table);
     }
 
+    function getPublication($id)
+    {
+        $table = 'publications';
+        $publication = getById($table, $id);
+
+        $publication['refs'] = $this->getPublicationRefs($id);
+        $publication['authors'] = $this->getPublicationAuthors($id);
+
+        return $publication;
+    }
+
+    function getPublicationAuthors($id)
+    {
+        global $db;
+        $table = 'publications_to_authors';
+        $filter = 'publicationid';
+        $column = 'authorid';
+
+        $query = 'SELECT ?n FROM ?n WHERE ?n=?i';
+        return $db->getCol($query, $column, $table, $filter, $id);
+    }
+
+    function getPublicationRefs($id)
+    {
+        global $db;
+        $table = 'publications_to_publications';
+        $filter = 'origin_publ_id';
+        $column = 'end_publ_id';
+
+        $query = 'SELECT ?n FROM ?n WHERE ?n=?i';
+        return $db->getCol($query, $column, $table, $filter, $id);
+    }
+
+    function getRefOriginPublications($id)
+    {
+        global $db;
+        $table = 'publications_to_publications';
+        $filter = 'end_publ_id';
+        $column = 'origin_publ_id';
+
+        $query = 'SELECT ?n FROM ?n WHERE ?n=?i';
+        return $db->getCol($query, $column, $table, $filter, $id);
+    }
+
 
     function saveAuthor($data)
     {

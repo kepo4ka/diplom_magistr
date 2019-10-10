@@ -9,6 +9,15 @@ function checkExist($table, $value)
     return $is_exist;
 }
 
+
+function checkExistMulti($table, $filter)
+{
+    global $db;
+    $query = 'SELECT `id` FROM ?n WHERE ?u LIMIT 1';
+    $is_exist = $db->getOne($query, $table, $filter);
+    return $is_exist;
+}
+
 function getIpReg($str)
 {
     $matches = array();
@@ -19,6 +28,27 @@ function getIpReg($str)
     }
     return false;
 }
+
+
+/**
+ * Получить количество записей в таблице
+ * @param $table string Таблица, по которой идёт подсчёт
+ * @param bool $col Название столбца, по которому идёт выбор (опционально)
+ * @param bool $val Значение стоблца, по которому идёт выбор
+ * @return int Количество записей
+ */
+function counting($table, $col = false, $val = false)
+{
+    global $db;
+    $query = "SELECT COUNT(1) FROM ?n";
+
+    if (!empty($col) && !empty($val)) {
+        $query .= " WHERE `$col`='$val'";
+    }
+    $res = $db->getOne($query, $table);
+    return $res ?: 0;
+}
+
 
 function save($p_data, $table, $primary = 'id')
 {
@@ -39,6 +69,78 @@ function save($p_data, $table, $primary = 'id')
     }
     return true;
 }
+
+
+function getById($table, $id)
+{
+    global $db;
+
+    $query = 'SELECT * FROM ?n WHERE `id`=?i';
+
+    return $db->getRow($query, $table, $id);
+}
+
+/**
+ * Получить все записи из таблицы (расширенная)
+ * @param $table string Название таблицы
+ * @param int $limit Ограничение
+ * @param int $offset Отступ
+ * @param array|bool|mixed $search_array Список для поиска
+ * @param $order
+ * @return array|bool|mixed Список записей
+ */
+function getAllLimitAdvanced($table, $limit = 0, $offset = 0, $search_array, $order)
+{
+    global $db;
+
+    if ($limit > 0) {
+    } else {
+        $limit = 1000;
+    }
+
+    $query = "SELECT * FROM ?n";
+
+    if (!empty($search_array)) {
+
+        $query .= ' WHERE';
+
+        foreach ($search_array as $i => $iValue) {
+            if (empty($iValue['value'])) {
+                $iValue['full'] = true;
+            }
+
+            $column = $iValue['column'];
+            $value = $iValue['value'];
+
+            if (empty($iValue['full'])) {
+                $query .= " `$column` LIKE'%$value%' AND";
+            } else {
+                $query .= " `$column`='$value' AND";
+            }
+        }
+        $query .= ' 1';
+    }
+
+    if (!empty($order)) {
+        $column = $order['column'];
+        $dir = $order['dir'];
+
+        $query .= " ORDER BY `$column` $dir";
+    }
+
+    if ($limit > 0) {
+        $query .= " LIMIT $limit";
+
+        if ($offset > 0) {
+            $query .= " OFFSET $offset";
+        }
+    }
+//    echovarDumpPre($query);
+
+
+    return $db->getAll($query, $table);
+}
+
 
 function saveRelation($p_data, $table)
 {
