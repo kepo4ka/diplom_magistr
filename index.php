@@ -36,14 +36,15 @@ $filter = array();
 $filter['publicationid'] = 39204055;
 $filter['authorid'] = 1001122;
 
-$res = Publication::get(38527260);
+$res = ElibraryCurl::getPublication();
 echoVarDumpPre($res);
 
+
+
+/*
+
 $organisation = $elibCurl->getOrganisationInfo($org_id);
-
 $elibDB->saveOrganisation($organisation);
-
-
 $k = 1;
 
 while (true) {
@@ -84,30 +85,32 @@ while (true) {
                     }
 
                     $elibDB->saveAuthor($author);
-                    $elibDB->saveRelationAuthorPublication($publication['id'], $author['id']);
+                } else {
+                    $publication = Author::get($author_id);
+                }
+                $elibDB->saveRelationAuthorPublication($publication['id'], $author['id']);
 
-                    foreach ($author['organisations'] as $organisation_id) {
-                        if (!checkExist('organisations', $organisation_id)) {
-                            $organisation1 = $elibCurl->getOrganisationInfo($organisation_id);
+                foreach ($author['organisations'] as $organisation_id) {
+                    if (!checkExist('organisations', $organisation_id)) {
+                        $organisation1 = $elibCurl->getOrganisationInfo($organisation_id);
 
-                            if (empty($organisation1)) {
-                                continue;
-                            }
-
-                            $elibDB->saveOrganisation($organisation1);
-                            $elibDB->saveRelationOrganisationAuthor($author['id'], $organisation1['id']);
+                        if (empty($organisation1)) {
+                            continue;
                         }
+
+                        $elibDB->saveOrganisation($organisation1);
+                        $elibDB->saveRelationOrganisationAuthor($author['id'], $organisation1['id']);
                     }
                 }
             }
         }
-
-
     } else {
         break;
     }
     $k++;
 }
+
+*/
 
 arrayLog($query_count, 'Количество запросов');
 arrayLog('Информация об организация <strong>' . $organisation['name'] . '</strong> Добавлена', 'Информация об организации');
