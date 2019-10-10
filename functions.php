@@ -156,6 +156,20 @@ function saveRelation($p_data, $table)
 }
 
 
+function getOneToMany($table, $column, $value, $needed_column, $limit = 0)
+{
+    global $db;
+    $query = 'SELECT ?n FROM ?n WHERE ?n=?i';
+    $limit = (int)$limit;
+
+    if ($limit) {
+        $query .= "LIMIT $limit";
+    }
+
+    return $db->getCol($query, $needed_column, $table, $column, $value);
+}
+
+
 function fetch($url, $z = null)
 {
     global $cookiePath, $def_proxy_info, $current_user_agent;
@@ -203,7 +217,7 @@ function fetch($url, $z = null)
 
 function fetchProxy($url, $z = null)
 {
-    global $query_count, $def_proxy_info, $delay_min, $delay_max;
+    global $query_count, $def_proxy_info, $delay_min, $delay_max, $sleep_mode;
 
     if ($query_count > 0) {
         if ($query_count % 4 == 0) {
@@ -255,10 +269,11 @@ function fetchProxy($url, $z = null)
         }
         $t++;
 
-        $sleep_time = rand($delay_min, $delay_max);
-
-        arrayLog('', 'Sleep ' . $sleep_time . ' s...', 'warning');
-        sleep($sleep_time);
+        if ($sleep_mode) {
+            $sleep_time = rand($delay_min, $delay_max);
+            arrayLog('', 'Sleep ' . $sleep_time . ' s...', 'warning');
+            sleep($sleep_time);
+        }
     }
 
     return $result;
