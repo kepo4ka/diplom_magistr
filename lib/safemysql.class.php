@@ -482,7 +482,7 @@ class SafeMySQL
     {
         $query = '';
         $raw = array_shift($args);
-        $array = preg_split('~(\?[nsiuap])~u', $raw, null, PREG_SPLIT_DELIM_CAPTURE);
+        $array = preg_split('~(\?[nsiuapxw])~u', $raw, null, PREG_SPLIT_DELIM_CAPTURE);
         $anum = count($args);
         $pnum = floor(count($array) / 2);
         if ($pnum != $anum) {
@@ -510,8 +510,18 @@ class SafeMySQL
                     $part = $this->createIN($value);
                     break;
                 case '?u':
-                    $part = $this->createSET($value);
+                    $comma = ',';
+                    $part = $this->createSET($value, $comma);
                     break;
+                case '?x':
+                    $comma = ' AND ';
+                    $part = $this->createSET($value, $comma);
+                    break;
+                case '?w':
+                    $comma = ' OR ';
+                    $part = $this->createSET($value, $comma);
+                    break;
+
                 case '?p':
                     $part = $value;
                     break;
@@ -570,7 +580,7 @@ class SafeMySQL
         return $query;
     }
 
-    protected function createSET($data)
+    protected function createSET($data, $comma = ',')
     {
         if (!is_array($data)) {
             $this->error("SET (?u) placeholder expects array, " . gettype($data) . " given");
@@ -580,13 +590,17 @@ class SafeMySQL
             $this->error("Empty array for SET (?u) placeholder");
             return;
         }
-        $query = $comma = '';
+        $query = '';
+
+        $current_comma = '';
         foreach ($data as $key => $value) {
-            $query .= $comma . $this->escapeIdent($key) . '=' . $this->escapeString($value);
-            $comma = ",";
+            $query .= $current_comma . $this->escapeIdent($key) . '=' . $this->escapeString($value);
+            $current_comma = $comma;
         }
         return $query;
     }
+
+
 
     protected function error($err)
     {
