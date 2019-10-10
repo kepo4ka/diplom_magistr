@@ -13,7 +13,7 @@ function checkExist($table, $value)
 function checkExistMulti($table, $filter)
 {
     global $db;
-    $query = 'SELECT `id` FROM ?n WHERE ?u LIMIT 1';
+    $query = 'SELECT `id` FROM ?n WHERE ?x LIMIT 1';
     $is_exist = $db->getOne($query, $table, $filter);
     return $is_exist;
 }
@@ -205,12 +205,10 @@ function fetchProxy($url, $z = null)
 {
     global $query_count, $def_proxy_info, $delay_min, $delay_max;
 
-    if ($query_count % 5 == 0 || $query_count % 9 == 0) {
-        $log['old_proxy'] = $def_proxy_info['full'];
-        ProxyDB::update();
-        $log['new_proxy'] = $def_proxy_info['full'];
-
-        arrayLog($log, 'Good Update Proxy');
+    if ($query_count > 0) {
+        if ($query_count % 4 == 0) {
+            ProxyDB::update();
+        }
     }
 
     $result = array();
@@ -232,22 +230,35 @@ function fetchProxy($url, $z = null)
         $query_count++;
         $k++;
 
-        if ($t > 2) {
+        $checkBan = ElibraryCurl::checkIpBan($result);
+
+        if ($t > 2 || $checkBan) {
+
+
             $log = array();
             $log['proxy'] = $def_proxy_info['full'];
             $log['url'] = $url;
-            arrayLog($log, 'Bad Proxy', 'error');
+
+            if ($checkBan) {
+                $message = 'Banned Proxy';
+                ProxyDB::deleteProxy($def_proxy_info);
+                echoVarDumpPre('banned');
+            } else {
+                $message = 'Bad Request';
+            }
 
             ProxyDB::update();
+
+            arrayLog($log, $message, 'error');
+
             $t = 1;
         }
         $t++;
 
         $sleep_time = rand($delay_min, $delay_max);
-        $sleep_time_seconds = round($sleep_time / 1000000);
 
-        arrayLog('Sleep ' . $sleep_time_seconds . 's', 'Sleep ' . $sleep_time_seconds . 's', 'warning');
-        usleep($sleep_time);
+        arrayLog('', 'Sleep ' . $sleep_time . ' s...', 'warning');
+        sleep($sleep_time);
     }
 
     return $result;

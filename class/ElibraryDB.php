@@ -7,32 +7,36 @@ class ElibraryDB
     {
     }
 
-
-    function saveOrganisation($data)
+    static function saveOrganisation($data)
     {
         $table = 'organisations';
         return save($data, $table);
     }
 
-    function savePublication($data)
+    static function savePublication($data)
     {
         $table = 'publications';
+
+        @$id = $data['id'];
+
+        if (empty($id)) {
+            return false;
+        }
 
         return save($data, $table);
     }
 
-    function getPublication($id)
+    static function getPublication($id)
     {
         $table = 'publications';
         $publication = getById($table, $id);
-
-        $publication['refs'] = $this->getPublicationRefs($id);
-        $publication['authors'] = $this->getPublicationAuthors($id);
-
         return $publication;
     }
 
-    function getPublicationAuthors($id)
+
+
+
+    static function getPublicationAuthors($id)
     {
         global $db;
         $table = 'publications_to_authors';
@@ -43,7 +47,7 @@ class ElibraryDB
         return $db->getCol($query, $column, $table, $filter, $id);
     }
 
-    function getPublicationRefs($id)
+    static function getPublicationRefs($id)
     {
         global $db;
         $table = 'publications_to_publications';
@@ -54,7 +58,7 @@ class ElibraryDB
         return $db->getCol($query, $column, $table, $filter, $id);
     }
 
-    function getRefOriginPublications($id)
+    static function getRefOriginPublications($id)
     {
         global $db;
         $table = 'publications_to_publications';
@@ -66,14 +70,14 @@ class ElibraryDB
     }
 
 
-    function saveAuthor($data)
+    static function saveAuthor($data)
     {
         $table = 'authors';
         return save($data, $table);
     }
 
 
-    function relationOrganisationPublication($publication_id, $organisation_id)
+    static function saveRelationOrganisationPublication($publication_id, $organisation_id)
     {
         $table = 'publications_to_organisations';
 
@@ -82,11 +86,10 @@ class ElibraryDB
             'orgsid' => $organisation_id
         ];
 
-
         return saveRelation($data, $table);
     }
 
-    function relationAuthorPublication($publication_id, $author_id)
+    static function saveRelationAuthorPublication($publication_id, $author_id)
     {
         $table = 'publications_to_authors';
 
@@ -98,7 +101,7 @@ class ElibraryDB
         return saveRelation($data, $table);
     }
 
-    function relationOrganisationAuthor($author_id, $organisation_id)
+    static function saveRelationOrganisationAuthor($author_id, $organisation_id)
     {
         $table = 'authors_to_organisations';
 
@@ -106,10 +109,11 @@ class ElibraryDB
             'orgsid' => $organisation_id,
             'authorid' => $author_id
         ];
+
         return saveRelation($data, $table);
     }
 
-    function relationPublicationPublication($publication_id, $publication_id_origin)
+    static function saveRelationPublicationPublication($publication_id, $publication_id_origin)
     {
         $table = 'publications_to_publications';
 
@@ -117,6 +121,7 @@ class ElibraryDB
             'origin_publ_id' => $publication_id_origin,
             'end_publ_id' => $publication_id
         ];
+
         return saveRelation($data, $table);
     }
 

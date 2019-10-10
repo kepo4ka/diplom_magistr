@@ -95,21 +95,43 @@ class ProxyDB
     }
 
 
+    static function deleteProxy($proxy)
+    {
+        global $proxy_list;
+
+        $del_proxy = $proxy;
+
+        if (!empty($proxy['full'])) {
+            $del_proxy = $proxy['full'];
+        }
+
+        for ($i = 0; $i < count($proxy_list); $i++) {
+            if ($proxy_list[$i]['full'] == $del_proxy) {
+                array_splice($proxy_list, $i, 1);
+                return true;
+            }
+        }
+        return false;
+    }
+
     static function update()
     {
         global $proxy_list, $def_proxy_info, $cookiePath1, $current_user_agent, $user_agents;
 
 
         if (empty($proxy_list)) {
-            $proxy_list = self::getList();
+            arrayLog('STOP WORK', 'Proxy List Empty', 'error');
+            exit;
         }
-
 
         $index = rand(0, count($proxy_list) - 1);
         $def_proxy_info = $proxy_list[$index];
         $index = rand(0, count($user_agents) - 1);
         $current_user_agent = $user_agents[$index];
         @unlink($cookiePath1);
+
+        arrayLog('New Proxy: ' . $def_proxy_info['full'], 'Change Proxy');
+
         return true;
     }
 

@@ -3,19 +3,11 @@
 
 class ElibraryCurl
 {
-    function __construct()
+    static function getHome()
     {
         global $elibrary_config;
 
-        $this->base_url = $elibrary_config['base_url'];
-        $this->login = $elibrary_config['login'];
-        $this->password = $elibrary_config['password'];
-    }
-
-
-    function getHome()
-    {
-        $url = $this->base_url;
+        $url = $elibrary_config['base_url'];
 
         $parsed_html = fetchProxy($url);
 
@@ -24,39 +16,43 @@ class ElibraryCurl
         }
         return $parsed_html;
 
-        return preg_match('/eLIBRARY.RU - НАУЧНАЯ ЭЛЕКТРОННАЯ БИБЛИОТЕКА/m', $parsed_html);
+//        return preg_match('/eLIBRARY.RU - НАУЧНАЯ ЭЛЕКТРОННАЯ БИБЛИОТЕКА/m', $parsed_html);
     }
 
 
-    function login()
+    static function login()
     {
-        $url = $this->base_url . '/' . 'start_session.asp';
+        global $elibrary_config;
+
+        $url = $elibrary_config['base_url'] . '/' . 'start_session.asp';
 
         $data['params'] = [
-            'login' => $this->login,
-            'password' => $this->password
+            'login' => $elibrary_config['login'],
+            'password' => $elibrary_config['password']
         ];
         $parsed_html = fetchProxy($url, $data);
         return $parsed_html;
     }
 
-    function checkLogin($html = false)
+    static function checkLogin($html = false)
     {
+        global $elibrary_config;
         if (!$html) {
-            $html = $this->getHome();
+            $html = self::getHome();
         }
 
-        $reg = $this->login;
+        $reg = $elibrary_config['login'];
         return preg_match("/$reg/", $html);
     }
 
-    function logOut()
+    static function logOut()
     {
         clearCookie();
     }
 
-    function getOrganisationInfo($id = 4851)
+    static function getOrganisationInfo($id = 4851)
     {
+        global $elibrary_config;
         $organisation = array();
         $organisation['id'] = $id;
         $organisation['name'] = '';
@@ -66,7 +62,7 @@ class ElibraryCurl
         $organisation['country'] = '';
         $organisation['region'] = '';
 
-        $url = $this->base_url . '/' . 'org_about.asp';
+        $url = $elibrary_config['base_url'] . '/' . 'org_about.asp';
         $data['params'] = ['orgsid' => $id];
         $parsed_html = fetchProxy($url, $data);
 
@@ -115,20 +111,22 @@ class ElibraryCurl
             }
         }
 
+        $data->clear();
+
         if (empty($organisation['name'])) {
-            echoVarDumpPre($parsed_html);
+            return false;
         }
 
-        $data->clear();
         return $organisation;
     }
 
 
-    function getOrgPublications($id, $page = 1)
+    static function getOrgPublications($id, $page = 1)
     {
+        global $elibrary_config;
         $publications = array();
 
-        $url = $this->base_url . '/' . 'org_items.asp';
+        $url = $elibrary_config['base_url'] . '/' . 'org_items.asp';
         $data['params'] = ['orgsid' => $id,
             'show_option' => '0',
             'pagenum' => $page];
@@ -153,8 +151,19 @@ class ElibraryCurl
     }
 
 
-    function getPublication($id = 35287282)
+    static function checkIpBan($html)
     {
+        if (empty($html)) {
+            return false;
+        }
+
+        return preg_match('/нарушения/m', $html);
+
+    }
+
+    static function getPublication($id = 35287282)
+    {
+        global $elibrary_config;
         $publication = array();
         $publication['id'] = $id;
         $publication['title'] = '';
@@ -168,7 +177,8 @@ class ElibraryCurl
 //            $this->login();
 //        }
 
-        $url = $this->base_url . '/' . 'item.asp';
+
+        $url = $elibrary_config['base_url'] . '/' . 'item.asp';
         $data['params'] = ['id' => $id];
         $parsed_html = fetchProxy($url, $data);
 
@@ -217,24 +227,29 @@ class ElibraryCurl
 
         $load_more = $data->find('#show_reflist');
         if (!empty($load_more)) {
-            $more_refs = $this->getMorePublicationRefs($id);
+            $more_refs = self::getMorePublicationRefs($id);
             $publication['refs'] = array_unique(array_merge($publication['refs'], $more_refs));
         }
 
         $data->clear();
 
+        if (empty($publication['title'])) {
+            return false;
+        }
+
         return $publication;
     }
 
-    function getMorePublicationRefs($id)
+    static function getMorePublicationRefs($id)
     {
+        global $elibrary_config;
         $ref_publications = array();
 
 //        if (!$this->checkLogin()) {
 //            $this->login();
 //        }
 
-        $url = $this->base_url . '/' . 'get_item_refs.asp';
+        $url = $elibrary_config['base_url'] . '/' . 'get_item_refs.asp';
         $data['params'] = ['id' => $id,
             'rand' => jsRandom()];
         $parsed_html = fetchProxy($url, $data);
@@ -253,8 +268,9 @@ class ElibraryCurl
         return $ref_publications;
     }
 
-    function getAuthorInfo($id = 781679)
+    static function getAuthorInfo($id = 781679)
     {
+        global $elibrary_config;
         $author = array();
         $author['id'] = $id;
         $author['fio'] = '';
@@ -265,7 +281,7 @@ class ElibraryCurl
         $author['organisations'] = 0;
 
 
-        $url = $this->base_url . '/' . 'author_profile.asp';
+        $url = $elibrary_config['base_url'] . '/' . 'author_profile.asp';
         $data['params'] = ['authorid' => $id];
         $parsed_html = fetchProxy($url, $data);
 
@@ -305,15 +321,21 @@ class ElibraryCurl
         }
 
         $data->clear();
+
+        if (empty($author['fio'])) {
+            return false;
+        }
+
         return $author;
     }
 
-    function getAuthorPublications($id = 781679, $pagenum = 1)
+    static function getAuthorPublications($id = 781679, $pagenum = 1)
     {
+        global $elibrary_config;
+
         $publications = array();
 
-
-        $url = $this->base_url . '/' . 'author_items.asp';
+        $url = $elibrary_config['base_url'] . '/' . 'author_items.asp';
         $data['params'] = ['authorid' => $id,
             'pagenum' => $pagenum];
         $parsed_html = fetchProxy($url, $data);

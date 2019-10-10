@@ -2,6 +2,7 @@
 
 include 'init.php';
 
+$proxy_list = ProxyDB::getList();
 
 $proccess_id = substr(md5(microtime()), 0, 5);
 
@@ -20,25 +21,23 @@ if (empty($_REQUEST['start'])) {
 }
 
 
-$filter = array();
-$filter['publicationid'] =
-$filter['publicationid'] =
-
-$res = checkExistMulti('publications_to_authors', $filter);
-echoVarDumpPre($res);
-
-
 $query_count = 1;
 
 $list = array();
 
 $start = microtime(true);
 
+arrayLog('Work Started', 'Start', 'start');
+
 ProxyDB::update();
 
-arrayLog('Work Started', 'Start', 'start');
-arrayLog($def_proxy_info['full'], 'First Proxy');
 
+$filter = array();
+$filter['publicationid'] = 39204055;
+$filter['authorid'] = 1001122;
+
+$res = Publication::get(38527260);
+echoVarDumpPre($res);
 
 $organisation = $elibCurl->getOrganisationInfo($org_id);
 
@@ -65,10 +64,10 @@ while (true) {
             }
 
             foreach ($publication['refs'] as $ref) {
-                $elibDB->relationPublicationPublication($ref, $publication['id']);
+                $elibDB->saveRelationPublicationPublication($ref, $publication['id']);
             }
 
-            $elibDB->relationOrganisationPublication($publication['id'], $organisation['id']);
+            $elibDB->saveRelationOrganisationPublication($publication['id'], $organisation['id']);
 
 
             if (empty($publication['authors'])) {
@@ -85,7 +84,7 @@ while (true) {
                     }
 
                     $elibDB->saveAuthor($author);
-                    $elibDB->relationAuthorPublication($publication['id'], $author['id']);
+                    $elibDB->saveRelationAuthorPublication($publication['id'], $author['id']);
 
                     foreach ($author['organisations'] as $organisation_id) {
                         if (!checkExist('organisations', $organisation_id)) {
@@ -96,7 +95,7 @@ while (true) {
                             }
 
                             $elibDB->saveOrganisation($organisation1);
-                            $elibDB->relationOrganisationAuthor($author['id'], $organisation1['id']);
+                            $elibDB->saveRelationOrganisationAuthor($author['id'], $organisation1['id']);
                         }
                     }
                 }

@@ -42,6 +42,8 @@ $proxy_active = true;
 $proxy_url = 'http://127.0.0.1:1000/';
 
 $def_proxy_info = array();
+$def_proxy_info['full'] = '';
+$def_proxy_info['auth'] = ':';
 
 $proxy_list = array();
 
@@ -50,8 +52,8 @@ $query_count = 0;
 //$delay_min = 8000000;
 //$delay_max = 12000000;
 
-$delay_min = 6000000;
-$delay_max = 20300000;
+$delay_min = 6;
+$delay_max = 20;
 
 $max_try = 2;
 

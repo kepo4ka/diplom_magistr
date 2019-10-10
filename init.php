@@ -10,6 +10,8 @@ require_once 'class/ProxyDB.php';
 require_once 'class/ElibraryParser.php';
 require_once 'class/ElibraryCurl.php';
 require_once 'class/ElibraryDB.php';
+require_once 'class/Publication.php';
+require_once 'class/Author.php';
 
 
 $user = 'root';
