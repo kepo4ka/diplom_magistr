@@ -3,29 +3,62 @@
 
 class Publication
 {
+    static $table = 'publications';
     static $primary = 'id';
 
-    static function get($id, $parse = true)
+    static function get($id, $full = false)
     {
-        $publication = ElibraryDB::getPublication($id);
+        $publication = getById(self::$table, $id);
 
         if (!empty($publication)) {
-            $publication['refs'] = ElibraryDB::getPublicationRefs($id);
-            $publication['authors'] = ElibraryDB::getPublicationAuthors($id);
-            $publication['parsed'] = false;
-            return $publication;
-        }
-
-
-        if ($parse) {
+            if ($full) {
+                $publication['refs'] = self::getRefs($id);
+                $publication['authors'] = self::getAuthors($id);
+                $publication['organisations'] = self::getOrganisations($id);
+            }
+        } else {
             $publication = ElibraryCurl::getPublication($id);
             echoVarDumpPre($publication);
-            $publication['parsed'] = true;
             self::save($publication);
         }
-
         return $publication;
     }
+
+    static function getRefs($id)
+    {
+        $table = 'publications_to_publications';
+        $needed = 'end_publ_id';
+        $column = 'origin_publ_id';
+        return getOneToMany($table, $column, $id, $needed);
+    }
+
+    static function getAuthors($id)
+    {
+        $table = 'publications_to_authors';
+        $needed = 'authorid';
+        $column = 'publicationid';
+        return getOneToMany($table, $column, $id, $needed);
+    }
+
+    static function getOrganisations($id)
+    {
+        $table = 'publications_to_organisations';
+        $needed = 'orgsid';
+        $column = 'publicationid';
+        return getOneToMany($table, $column, $id, $needed);
+    }
+
+    static function parse($id)
+    {
+        $publication = getById(self::$table, $id);
+        if (empty($publication)) {
+            $publication = ElibraryCurl::getPublication($id);
+            self::save($publication);
+            return true;
+        }
+        return false;
+    }
+
 
     static function save($publication)
     {
@@ -35,73 +68,75 @@ class Publication
             return false;
         }
 
-        $res = ElibraryDB::savePublication($publication);
+        $res = save($publication, self::$table);
 
         if (empty($res)) {
             return false;
         }
 
-        foreach ($publication['authors'] as $author) {
-            ElibraryDB::saveRelationAuthorPublication($publication['id'], $author);
+        if (!empty($publication['authors'])) {
+            self::saveAuthors($id, $publication['authors']);
         }
 
-        foreach ($publication['refs'] as $ref_id) {
-            ElibraryDB::saveRelationPublicationPublication($ref_id, $publication['id']);
+        if (!empty($publication['refs'])) {
+            self::saveRefs($id, $publication['refs']);
         }
+
         return $publication;
     }
 
 
-    static function parse($id)
+    static function saveAuthors($id, $authors)
     {
-        $publication = ElibraryDB::getPublication($id);
+        $rel_table = 'publications_to_authors';
 
-        if (!empty($publication)) {
-            return $publication;
+        foreach ($authors as $author) {
+            $data = [
+                'publicationid' => $id,
+                'authorid' => $author
+            ];
+            saveRelation($data, $rel_table);
         }
-        $publication = ElibraryCurl::getPublication($id);
+    }
 
-        if (!empty($publication)) {
-            $res = ElibraryDB::savePublication($publication);
-            if (empty($res)) {
-                return false;
-            }
+    static function saveRefs($id, $refs)
+    {
+        $rel_table = 'publications_to_publications';
+
+        foreach ($refs as $ref) {
+            $data = [
+                'origin_publ_id' => $id,
+                'end_publ_id' => $ref
+            ];
+            saveRelation($data, $rel_table);
         }
-        return $publication;
     }
 
 
-    static function checkRefs($publication)
+    static function checkAuthors($authors)
     {
-        if (empty($publication['refs'])) {
+        if (empty($authors)) {
             return false;
         }
 
-        $refs = $publication['refs'];
-
-        foreach ($refs as $ref) {
-            self::parse($ref);
+        foreach ($authors as $author) {
+            Author::parse($author);
         }
 
+        return $author;
+    }
+
+    static function checkRefs($refs)
+    {
+        if (empty($refs)) {
+            return false;
+        }
+
+        foreach ($refs as $item) {
+            self::parse($item);
+        }
         return $refs;
     }
-
-
-    static function checkAuthors($publication)
-    {
-        if (empty($publication['authors'])) {
-            return false;
-        }
-
-        $refs = $publication['authors'];
-
-        foreach ($refs as $ref) {
-            self::parse($ref);
-        }
-
-        return true;
-    }
-
 
 }
 
