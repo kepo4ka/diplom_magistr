@@ -116,7 +116,7 @@ class ProxyDB
 
     static function update()
     {
-        global $proxy_list, $def_proxy_info, $cookiePath1, $current_user_agent, $user_agents;
+        global $proxy_list, $def_proxy_info, $current_user_agent, $user_agents;
 
 
         if (empty($proxy_list)) {
@@ -128,7 +128,7 @@ class ProxyDB
         $def_proxy_info = $proxy_list[$index];
         $index = rand(0, count($user_agents) - 1);
         $current_user_agent = $user_agents[$index];
-        @unlink($cookiePath1);
+        @unlink(getCookiePath(1));
 
         arrayLog('New Proxy: ' . $def_proxy_info['full'], 'Change Proxy');
 

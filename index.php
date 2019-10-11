@@ -2,12 +2,13 @@
 
 include 'init.php';
 
+
 $proxy_list = ProxyDB::getList();
 
 $proccess_id = substr(md5(microtime()), 0, 5);
 
+
 $elibCurl = new ElibraryCurl();
-$elibDB = new ElibraryDB();
 
 $org_id = 1273;
 

@@ -172,9 +172,10 @@ function getOneToMany($table, $column, $value, $needed_column, $limit = 0)
 
 function fetch($url, $z = null)
 {
-    global $cookiePath, $def_proxy_info, $current_user_agent;
+    global $def_proxy_info, $current_user_agent;
 
     $ch = curl_init();
+    $cookiePath = getCookiePath();
 
     if (!empty($z['params'])) {
         $url .= '?' . http_build_query($z['params']);
@@ -309,7 +310,7 @@ function arrayLog($data, $title = 'Info', $type = 'info')
 
 function fetchNoProxy($url, $z = null)
 {
-    global $cookiePath;
+    $cookiePath = getCookiePath();
 
     $result = '';
     try {
@@ -375,7 +376,7 @@ function getColumnNames($table_name)
 
 function clearCookie()
 {
-    global $cookiePath;
+    $cookiePath = getCookiePath();
     file_put_contents($cookiePath, '');
     return true;
 }
@@ -439,3 +440,18 @@ function echoBr($var)
     echo '<hr>';
 }
 
+
+function getCookiePath($second = false)
+{
+    global $proccess_id;
+
+    if (empty($proccess_id)) {
+        return false;
+    }
+
+    $full_path = dirname(__FILE__) . '\cookies/' . $proccess_id . '.txt';
+    if ($second) {
+        $full_path = dirname(__FILE__) . '\cookies\\' . $proccess_id . '.txt';
+    }
+    return $full_path;
+}
