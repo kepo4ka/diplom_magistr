@@ -455,3 +455,44 @@ function getCookiePath($second = false)
     }
     return $full_path;
 }
+
+
+function splitDataSet($length = 2)
+{
+    $fn = fopen("dblp_papers_v11.json", "r");
+
+    $pub = array();
+
+    $k = 0;
+
+    while (!feof($fn) && $k < $length) {
+        $result = fgets($fn);
+        $element = json_decode($result, true);
+        $pub[] = $element;
+        $k++;
+
+//    echo $result;
+    }
+    fclose($fn);
+
+    file_put_contents("part$length.json", json_encode($pub, JSON_UNESCAPED_UNICODE), LOCK_EX);
+
+    return true;
+}
+
+function dataSetD3Format($length = 2)
+{
+
+    $data = json_decode(file_get_contents("part$length.json"), true);
+
+    foreach ($data as $item) {
+
+
+    }
+
+
+
+
+    return $data;
+
+}

@@ -32,6 +32,9 @@ arrayLog('Work Started', 'Start', 'start');
 
 ProxyDB::update();
 
+foreach ($users as $id => $user) {
+    // just process $user as usual
+}
 
 $filter = array();
 $filter['publicationid'] = 39204055;
