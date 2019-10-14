@@ -19,6 +19,11 @@ class Author
             if ($full) {
                 $author['publications'] = self::getPublications($id);
                 $author['organisations'] = self::getOrganisations($id);
+
+                if (empty($author['organisations'])) {
+                    $author = ElibraryCurl::getAuthorInfo($id);
+                    self::save($author);
+                }
             }
         } else {
             $author = ElibraryCurl::getAuthorInfo($id);
@@ -104,15 +109,31 @@ class Author
 
     static function saveOrganisations($id, $organisations)
     {
-        $rel_table = 'authors_to_organisations';
+        if (empty($organisations)) {
+            return false;
+        }
 
         foreach ($organisations as $organisation) {
-            $data = [
-                'orgsid' => $organisation,
-                'authorid' => $id
-            ];
-            saveRelation($data, $rel_table);
+            self::saveOrganisation($id, $organisation);
         }
+        return true;
+    }
+
+    static function saveOrganisation($id, $organisation)
+    {
+        $rel_table = 'authors_to_organisations';
+
+        if (empty($organisation)) {
+            return false;
+        }
+
+//        Organisation::get($organisation);
+
+        $data = [
+            'orgsid' => $organisation,
+            'authorid' => $id
+        ];
+        return saveRelation($data, $rel_table);
     }
 
 
@@ -136,17 +157,29 @@ class Author
             return false;
         }
 
-        $rel_table = 'publications_to_authors';
-
         foreach ($publications as $publication) {
-            $data = [
-                'publicationid' => $publication,
-                'authorid' => $id
-            ];
-            saveRelation($data, $rel_table);
+            self::savePublication($id, $publication);
         }
         return true;
     }
+
+    static function savePublication($id, $publication)
+    {
+        if (empty($publications)) {
+            return false;
+        }
+
+        $rel_table = 'publications_to_authors';
+
+//        Publication::get($publication);
+
+        $data = [
+            'publicationid' => $publication,
+            'authorid' => $id
+        ];
+        return saveRelation($data, $rel_table);
+    }
+
 
     static function checkPublications($publications)
     {

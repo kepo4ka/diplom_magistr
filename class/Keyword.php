@@ -18,8 +18,7 @@ class Keyword
             if ($full) {
                 $keyword['publications'] = self::getPublications($id);
             }
-        }
-        else {
+        } else {
             $keyword = ElibraryCurl::getKeywordInfo($id);
             self::save($keyword);
         }
@@ -75,16 +74,28 @@ class Keyword
             return false;
         }
 
-        $rel_table = 'publications_to_keywords';
-
         foreach ($publications as $publication) {
-            $data = [
-                'publicationid' => $publication,
-                'keywordid' => $id
-            ];
-            saveRelation($data, $rel_table);
+            self::savePublication($id, $publication);
         }
         return true;
+    }
+
+
+    static function savePublication($id, $publication)
+    {
+        if (empty($publication)) {
+            return false;
+        }
+
+//        Publication::get($publication);
+
+        $rel_table = 'publications_to_keywords';
+
+        $data = [
+            'publicationid' => $publication,
+            'keywordid' => $id
+        ];
+        return saveRelation($data, $rel_table);
     }
 
     static function checkPublications($publications)

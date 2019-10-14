@@ -39,7 +39,7 @@ class Organisation
 
     static function getAuthors($id)
     {
-        $table = 'authors_to_organsations';
+        $table = 'authors_to_organisations';
         $needed = 'authorid';
         $column = 'orgsid';
         return getOneToMany($table, $column, $id, $needed);
@@ -79,17 +79,30 @@ class Organisation
             return false;
         }
 
-        $rel_table = 'publications_to_organisations';
-
         foreach ($publications as $publication) {
-            $data = [
-                'orgsid' => $id,
-                'publicationid' => $publication
-            ];
-            saveRelation($data, $rel_table);
+            self::savePublication($id, $publication);
         }
         return true;
     }
+
+    static function savePublication($id, $publication)
+    {
+        if (empty($publication)) {
+            return false;
+        }
+
+//        Publication::get($publication);
+
+        $rel_table = 'publications_to_organisations';
+
+        $data = [
+            'orgsid' => $id,
+            'publicationid' => $publication
+        ];
+
+        return saveRelation($data, $rel_table);
+    }
+
 
     static function checkPublications($publications)
     {

@@ -106,43 +106,92 @@ class Publication
 
     static function saveAuthors($id, $authors)
     {
-        $rel_table = 'publications_to_authors';
+        if (empty($authors)) {
+            return false;
+        }
 
         foreach ($authors as $author) {
-            $data = [
-                'publicationid' => $id,
-                'authorid' => $author
-            ];
-            saveRelation($data, $rel_table);
+            self::saveAuthor($id, $author);
         }
+        return true;
     }
+
+    static function saveAuthor($id, $author)
+    {
+        $rel_table = 'publications_to_authors';
+
+        if (empty($author)) {
+            return false;
+        }
+
+//        Author::get($author);
+
+        $data = [
+            'publicationid' => $id,
+            'authorid' => $author
+        ];
+
+
+        return saveRelation($data, $rel_table);
+    }
+
 
     static function saveRefs($id, $refs)
     {
-        $rel_table = 'publications_to_publications';
+        if (empty($refs)) {
+            return false;
+        }
 
         foreach ($refs as $ref) {
-            $data = [
-                'origin_publ_id' => $id,
-                'end_publ_id' => $ref
-            ];
-            saveRelation($data, $rel_table);
+            self::saveRef($id, $ref);
         }
+        return true;
+    }
+
+    static function saveRef($id, $ref)
+    {
+        $rel_table = 'publications_to_publications';
+
+        if (empty($ref)) {
+            return false;
+        }
+
+//        Publication::get($ref);
+
+        $data = [
+            'origin_publ_id' => $id,
+            'end_publ_id' => $ref
+        ];
+
+        return saveRelation($data, $rel_table);
     }
 
     static function saveKeywords($id, $keywords)
     {
-        $rel_table = 'publications_to_keywords';
+        if (empty($keywords)) {
+            return false;
+        }
 
         foreach ($keywords as $keyword) {
-            $data = [
-                'publicationid' => $id,
-                'keywordid' => $keyword
-            ];
-            saveRelation($data, $rel_table);
+            self::saveKeyword($id, $keyword);
         }
+        return true;
     }
 
+    static function saveKeyword($id, $keyword)
+    {
+        $rel_table = 'publications_to_keywords';
+
+        if (empty($keyword)) {
+            return false;
+        }
+
+        $data = [
+            'publicationid' => $id,
+            'keywordid' => $keyword
+        ];
+        return saveRelation($data, $rel_table);
+    }
 
 
     static function checkAuthors($authors)

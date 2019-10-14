@@ -151,6 +151,7 @@ function saveRelation($p_data, $table)
 
     $columns = getColumnNames($table);
     $data = $db->filterArray($p_data, $columns);
+
     $query = 'INSERT INTO ?n SET ?u';
     return $db->query($query, $table, $data);
 }
@@ -270,7 +271,7 @@ function fetchProxy($url, $z = null)
     global $query_count, $def_proxy_info, $delay_min, $delay_max, $sleep_mode;
 
     if ($query_count > 0) {
-        if ($query_count % 4 == 0) {
+        if ($query_count % 7 == 0) {
             ProxyDB::update();
         }
     }

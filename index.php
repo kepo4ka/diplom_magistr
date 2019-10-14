@@ -30,10 +30,7 @@ $filter = array();
 $filter['publicationid'] = 39204055;
 $filter['authorid'] = 1001122;
 
-
-echoVarDumpPre($elibCurl::getKeywordPublications());
-
-$organisation = Organisation::get($org_id);
+$organisation = Organisation::get($org_id, true);
 
 $paganum = 1;
 
@@ -42,56 +39,96 @@ while (true) {
     $org_publications = Organisation::parsePublicationsPart($org_id, $paganum);
     $paganum++;
 
-    Organisation::savePublications($org_id, $org_publications);
 
     foreach ($org_publications as $org_publication) {
         $publication = Publication::get($org_publication, true);
+
+        if (empty($publication)) {
+            continue;
+        }
+
+        Organisation::savePublication($org_id, $publication['id']);
 
 
         foreach ($publication['authors'] as $pub_author) {
             $author = Author::get($pub_author, true);
 
+            if (empty($author)) {
+                continue;
+            }
+
+            Author::savePublication($pub_author, $org_publication);
+
             $paganum1 = 1;
 
             while ($author_publications_part = Author::parsePublicationsPart($pub_author, $paganum1)) {
                 $ppublication = Publication::get($author_publications_part);
+
+                if (empty($publication)) {
+                    continue;
+                }
+
+                Author::savePublication($pub_author, $ppublication);
                 $paganum1++;
             }
 
-
-            foreach ($author['publications'] as $author_publication) {
-                Publication::get($author_publication);
-            }
-
             foreach ($author['organisations'] as $author_organisation) {
-                Organisation::get($author_organisation);
+                $org = Organisation::get($author_organisation);
+
+                if (empty($org)) {
+                    continue;
+                }
+
+                Author::saveOrganisation($author_organisation, $pub_author);
             }
         }
 
         foreach ($publication['keywords'] as $keyword) {
-            Keyword::get($keyword);
+            $kkeyword = Keyword::get($keyword);
+            if (empty($kkeyword)) {
+                continue;
+            }
+
+            Publication::saveKeyword($org_publication, $keyword);
         }
 
 
-        foreach ($publication['refs'] as $pub_refs) {
-            $ref = Publication::get($pub_refs, true);
+        foreach ($publication['refs'] as $pub_ref) {
+            $ref = Publication::get($pub_ref, true);
+
+            if (empty($ref)) {
+                continue;
+            }
+
+            Publication::saveRef($org_publication, $pub_ref);
 
             foreach ($ref['authors'] as $ref_author) {
-                Author::get($ref_author);
+                $aauthor = Author::get($ref_author);
+
+                if (empty($aauthor)) {
+                    continue;
+                }
+
+                Publication::saveAuthor($pub_ref, $ref_author);
             }
 
             foreach ($ref['keywords'] as $keyword) {
-                Keyword::get($keyword);
+                $kkeyword = Keyword::get($keyword);
+
+                if (empty($kkeyword)) {
+                    continue;
+                }
+
+                Publication::saveKeyword($pub_ref, $keyword);
             }
 
-            foreach ($ref['publications'] as $author_publication) {
-                Publication::get($author_publication);
-            }
+//            foreach ($ref['publications'] as $ref_publication) {
+//                Publication::get($ref_publication);
+//                Publication::saveRef($pub_ref, $ref_publication);
+//            }
 
         }
-
     }
-
 
 }
 
