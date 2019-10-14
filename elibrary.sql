@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: 127.0.0.1
--- Время создания: Окт 14 2019 г., 22:08
+-- Время создания: Окт 15 2019 г., 01:24
 -- Версия сервера: 10.1.16-MariaDB
 -- Версия PHP: 5.6.24
 
@@ -55,7 +55,7 @@ CREATE TABLE `authors_to_organisations` (
 
 CREATE TABLE `keywords` (
   `id` int(11) NOT NULL,
-  `name` int(11) NOT NULL
+  `name` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
