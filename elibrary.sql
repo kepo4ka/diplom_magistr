@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: 127.0.0.1
--- Время создания: Окт 14 2019 г., 20:21
+-- Время создания: Окт 14 2019 г., 22:08
 -- Версия сервера: 10.1.16-MariaDB
 -- Версия PHP: 5.6.24
 
@@ -108,6 +108,13 @@ CREATE TABLE `publications` (
   `language` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Дамп данных таблицы `publications`
+--
+
+INSERT INTO `publications` (`id`, `title`, `type`, `year`, `language`) VALUES
+(37039312, 'ИСТОРИЯ ГОСУДАРСТВА И ПРАВА ЗАРУБЕЖНЫХ СТРАН', 'учебное пособие', 2019, 'русский');
+
 -- --------------------------------------------------------
 
 --
@@ -119,6 +126,15 @@ CREATE TABLE `publications_to_authors` (
   `publicationid` int(11) NOT NULL,
   `authorid` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Дамп данных таблицы `publications_to_authors`
+--
+
+INSERT INTO `publications_to_authors` (`id`, `publicationid`, `authorid`) VALUES
+(1619, 37039312, 772375),
+(1618, 37039312, 781679),
+(1620, 37039312, 871974);
 
 -- --------------------------------------------------------
 
@@ -143,6 +159,13 @@ CREATE TABLE `publications_to_organisations` (
   `publicationid` int(11) NOT NULL,
   `orgsid` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Дамп данных таблицы `publications_to_organisations`
+--
+
+INSERT INTO `publications_to_organisations` (`id`, `publicationid`, `orgsid`) VALUES
+(3621, 37039312, 5051);
 
 -- --------------------------------------------------------
 
@@ -259,7 +282,7 @@ ALTER TABLE `mylog`
 -- AUTO_INCREMENT для таблицы `publications_to_authors`
 --
 ALTER TABLE `publications_to_authors`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1618;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1621;
 --
 -- AUTO_INCREMENT для таблицы `publications_to_keywords`
 --
@@ -269,50 +292,12 @@ ALTER TABLE `publications_to_keywords`
 -- AUTO_INCREMENT для таблицы `publications_to_organisations`
 --
 ALTER TABLE `publications_to_organisations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3319;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3622;
 --
 -- AUTO_INCREMENT для таблицы `publications_to_publications`
 --
 ALTER TABLE `publications_to_publications`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
--- Ограничения внешнего ключа сохраненных таблиц
---
-
---
--- Ограничения внешнего ключа таблицы `authors_to_organisations`
---
-ALTER TABLE `authors_to_organisations`
-  ADD CONSTRAINT `authors_to_organisations_ibfk_1` FOREIGN KEY (`orgsid`) REFERENCES `organisations` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `authors_to_organisations_ibfk_2` FOREIGN KEY (`authorid`) REFERENCES `authors` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Ограничения внешнего ключа таблицы `publications_to_authors`
---
-ALTER TABLE `publications_to_authors`
-  ADD CONSTRAINT `publications_to_authors_ibfk_1` FOREIGN KEY (`publicationid`) REFERENCES `publications` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `publications_to_authors_ibfk_2` FOREIGN KEY (`authorid`) REFERENCES `authors` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Ограничения внешнего ключа таблицы `publications_to_keywords`
---
-ALTER TABLE `publications_to_keywords`
-  ADD CONSTRAINT `publications_to_keywords_ibfk_1` FOREIGN KEY (`keywordid`) REFERENCES `keywords` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Ограничения внешнего ключа таблицы `publications_to_organisations`
---
-ALTER TABLE `publications_to_organisations`
-  ADD CONSTRAINT `publications_to_organisations_ibfk_1` FOREIGN KEY (`publicationid`) REFERENCES `publications` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `publications_to_organisations_ibfk_2` FOREIGN KEY (`orgsid`) REFERENCES `organisations` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Ограничения внешнего ключа таблицы `publications_to_publications`
---
-ALTER TABLE `publications_to_publications`
-  ADD CONSTRAINT `publications_to_publications_ibfk_1` FOREIGN KEY (`origin_publ_id`) REFERENCES `publications` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `publications_to_publications_ibfk_2` FOREIGN KEY (`end_publ_id`) REFERENCES `publications` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
