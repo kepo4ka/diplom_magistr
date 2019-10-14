@@ -54,8 +54,8 @@ $proxy_list = array();
 $query_count = 0;
 
 $sleep_mode = true;
-$delay_min = 6;
-$delay_max = 16;
+$delay_min = 3;
+$delay_max = 10;
 
 $max_try = 2;
 
