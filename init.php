@@ -12,6 +12,7 @@ require_once 'class/ElibraryCurl.php';
 require_once 'class/Organisation.php';
 require_once 'class/Publication.php';
 require_once 'class/Author.php';
+require_once 'class/Keyword.php';
 
 
 $user = 'root';
