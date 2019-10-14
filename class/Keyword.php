@@ -7,7 +7,7 @@ class Keyword
     static $primary = 'id';
 
 
-    static function get($id, $full = false)
+    static function get($id=2324764, $full = false)
     {
         $keyword = getById(self::$table, $id);
 
