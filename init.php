@@ -9,6 +9,7 @@ require_once 'functions.php';
 require_once 'class/ProxyDB.php';
 require_once 'class/ElibraryParser.php';
 require_once 'class/ElibraryCurl.php';
+require_once 'class/Organisation.php';
 require_once 'class/Publication.php';
 require_once 'class/Author.php';
 

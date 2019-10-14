@@ -307,7 +307,6 @@ function fetchProxy($url, $z = null)
             if ($checkBan) {
                 $message = 'Banned Proxy';
                 ProxyDB::deleteProxy($def_proxy_info);
-                echoVarDumpPre('banned');
             } else {
                 $message = 'Bad Request';
             }

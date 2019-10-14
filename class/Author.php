@@ -10,10 +10,12 @@ class Author
     static function get($id, $full = false)
     {
         $author = getById(self::$table, $id);
-        $author['publications'] = array();
-        $author['organisations'] = array();
 
-        if (!empty($author)) {
+
+        if (!empty($author['fio'])) {
+            $author['publications'] = array();
+            $author['organisations'] = array();
+
             if ($full) {
                 $author['publications'] = self::getPublications($id);
                 $author['organisations'] = self::getOrganisations($id);
@@ -92,6 +94,10 @@ class Author
         if (!empty($author['organisations'])) {
             self::saveOrganisations($id, $author['organisations']);
         }
+        if (!empty($author['publications'])) {
+            self::savePublications($id, $author['publications']);
+        }
+
         return $author;
     }
 
@@ -159,8 +165,8 @@ class Author
     static function parsePublicationsPart($id, $pagenum = 1)
     {
         $publications = ElibraryCurl::getAuthorPublications($id, $pagenum);
-        self::savePublications($id, $publications);
-        self::checkPublications($publications);
+//        self::savePublications($id, $publications);
+//        self::checkPublications($publications);
         return $publications;
     }
 

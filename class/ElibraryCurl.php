@@ -144,7 +144,7 @@ class ElibraryCurl
         $data = str_get_html($parsed_html);
 
         if (empty($data)) {
-            return false;
+            return $publications;
         }
 
         $res = $data->find('form[name=results]');
@@ -158,6 +158,38 @@ class ElibraryCurl
         $data->clear();
         return $publications;
     }
+
+
+    static function getKeywordInfo($id = 2324764)
+    {
+        global $elibrary_config;
+        $keyword = array();
+        $keyword['id'] = $id;
+        $keyword['name'] = '';
+
+
+        $url = $elibrary_config['base_url'] . '/' . 'keyword_items.asp';
+        $data['params'] = ['id' => $id];
+        $parsed_html = fetchProxy($url, $data);
+
+        $data = str_get_html($parsed_html);
+
+        if (empty($data)) {
+            return false;
+        }
+
+        $keyword['name'] = checkRegular('/eLIBRARY.RU - Публикации с ключевым словом "(.+?)"/m', $parsed_html);
+
+
+        $data->clear();
+
+        if (empty($keyword['name'])) {
+            return false;
+        }
+
+        return $keyword;
+    }
+
 
 
     static function checkIpBan($html)
@@ -181,7 +213,7 @@ class ElibraryCurl
         $publication['language'] = '';
         $publication['authors'] = array();
         $publication['refs'] = array();
-
+        $publication['keywords'] = array();
 
         if (!$elibrary_config['authed']) {
             if (!self::checkLogin(self::login())) {
@@ -189,7 +221,6 @@ class ElibraryCurl
                 arrayLog($elibrary_config, 'Не удалось авторизоваться', 'error');
             }
         }
-
 
 
         $url = $elibrary_config['base_url'] . '/' . 'item.asp';
@@ -233,6 +264,20 @@ class ElibraryCurl
         }
         $publication['authors'] = array_unique($publication['authors']);
 
+        $matches = array();
+        preg_match_all('/<a href=\"keyword_items\.asp\?id=(\d+)\">(.+?)<\/a>/m', $parsed_html, $matches);
+
+        $keywords = array();
+        $keyword = array();
+
+        if (!empty($matches[1])) {
+            $keyword['id'] = $matches[1];
+            $keyword['name'] = $matches[2];
+            $keywords[] = $keyword;
+        }
+        $publication['keywords'] = $keywords;
+
+
         $refs = $data->find('a[title=Перейти на описание цитируемой публикации]');
         foreach ($refs as $ref) {
             $ref_id = checkRegular('/item.asp\?id=(\d+)/m', $ref->href);
@@ -244,6 +289,7 @@ class ElibraryCurl
             $more_refs = self::getMorePublicationRefs($id);
             $publication['refs'] = array_unique(array_merge($publication['refs'], $more_refs));
         }
+
 
         $data->clear();
 
@@ -354,6 +400,35 @@ class ElibraryCurl
 
         $url = $elibrary_config['base_url'] . '/' . 'author_items.asp';
         $data['params'] = ['authorid' => $id,
+            'pagenum' => $pagenum];
+        $parsed_html = fetchProxy($url, $data);
+
+        $data = str_get_html($parsed_html);
+
+        if (empty($data)) {
+            return false;
+        }
+
+        $res = $data->find('form[name=results]');
+        $matches = array();
+        preg_match_all('/id="arw(\d+)"/m', $res[0], $matches);
+
+        if (!empty($matches[1])) {
+            $publications = $matches[1];
+        }
+
+        $data->clear();
+        return $publications;
+    }
+
+    static function getKeywordPublications($id = 2324764, $pagenum = 1)
+    {
+        global $elibrary_config;
+
+        $publications = array();
+
+        $url = $elibrary_config['base_url'] . '/' . 'keyword_items.asp';
+        $data['params'] = ['id' => $id,
             'pagenum' => $pagenum];
         $parsed_html = fetchProxy($url, $data);
 

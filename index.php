@@ -8,7 +8,7 @@ updateAuthAccount();
 
 $elibCurl = new ElibraryCurl();
 
-$org_id = 1273;
+$org_id = 5051;
 
 if (!empty($_REQUEST['org_id'])) {
     $org_id = preg_replace('/[^\d]+/m', '', $_REQUEST['org_id']);
@@ -30,8 +30,70 @@ $filter = array();
 $filter['publicationid'] = 39204055;
 $filter['authorid'] = 1001122;
 
-$res = ElibraryCurl::getPublication();
-echoVarDumpPre($res);
+
+echoVarDumpPre($elibCurl::getKeywordPublications());
+
+$organisation = Organisation::get($org_id);
+
+$paganum = 1;
+
+
+while (true) {
+    $org_publications = Organisation::parsePublicationsPart($org_id, $paganum);
+    $paganum++;
+
+    Organisation::savePublications($org_id, $org_publications);
+
+    foreach ($org_publications as $org_publication) {
+        $publication = Publication::get($org_publication, true);
+
+
+        foreach ($publication['authors'] as $pub_author) {
+            $author = Author::get($pub_author, true);
+
+            $paganum1 = 1;
+
+            while ($author_publications_part = Author::parsePublicationsPart($pub_author, $paganum1)) {
+                $ppublication = Publication::get($author_publications_part);
+                $paganum1++;
+            }
+
+
+            foreach ($author['publications'] as $author_publication) {
+                Publication::get($author_publication);
+            }
+
+            foreach ($author['organisations'] as $author_organisation) {
+                Organisation::get($author_organisation);
+            }
+        }
+
+        foreach ($publication['keywords'] as $keyword) {
+            Keyword::get($keyword);
+        }
+
+
+        foreach ($publication['refs'] as $pub_refs) {
+            $ref = Publication::get($pub_refs, true);
+
+            foreach ($ref['authors'] as $ref_author) {
+                Author::get($ref_author);
+            }
+
+            foreach ($ref['keywords'] as $keyword) {
+                Keyword::get($keyword);
+            }
+
+            foreach ($ref['publications'] as $author_publication) {
+                Publication::get($author_publication);
+            }
+
+        }
+
+    }
+
+
+}
 
 
 /*

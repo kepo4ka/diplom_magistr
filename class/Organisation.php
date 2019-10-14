@@ -10,20 +10,22 @@ class Organisation
     static function get($id, $full = false)
     {
         $organisation = getById(self::$table, $id);
-        $organisation['publications'] = array();
-        $organisation['authors'] = array();
+
 
         if (!empty($organisation)) {
+            $organisation['publications'] = array();
+            $organisation['authors'] = array();
+
             if ($full) {
                 $organisation['publications'] = self::getPublications($id);
                 $organisation['authors'] = self::getAuthors($id);
             }
         } else {
-            $author = ElibraryCurl::getAuthorInfo($id);
-            self::save($author);
+            $organisation = ElibraryCurl::getOrganisationInfo($id);
+            self::save($organisation);
         }
 
-        return $author;
+        return $organisation;
     }
 
 
@@ -104,8 +106,8 @@ class Organisation
     static function parsePublicationsPart($id, $pagenum = 1)
     {
         $publications = ElibraryCurl::getOrgPublications($id, $pagenum);
-        self::savePublications($id, $publications);
-        self::checkPublications($publications);
+//        self::savePublications($id, $publications);
+//        self::checkPublications($publications);
         return $publications;
     }
 }

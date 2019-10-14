@@ -9,19 +9,22 @@ class Publication
     static function get($id, $full = false)
     {
         $publication = getById(self::$table, $id);
-        $publication['refs'] = array();
-        $publication['authors'] = array();
-        $publication['organisations'] = array();
 
-        if (!empty($publication)) {
+
+        if (!empty($publication['title'])) {
+            $publication['refs'] = array();
+            $publication['authors'] = array();
+            $publication['organisations'] = array();
+            $publication['keywords'] = array();
+
             if ($full) {
                 $publication['refs'] = self::getRefs($id);
                 $publication['authors'] = self::getAuthors($id);
                 $publication['organisations'] = self::getOrganisations($id);
+                $publication['keywords'] = self::getKeywords($id);
             }
         } else {
             $publication = ElibraryCurl::getPublication($id);
-            echoVarDumpPre($publication);
             self::save($publication);
         }
         return $publication;
@@ -51,10 +54,18 @@ class Publication
         return getOneToMany($table, $column, $id, $needed);
     }
 
+    static function getKeywords($id)
+    {
+        $table = 'publications_to_keywords';
+        $needed = 'keywordid';
+        $column = 'publicationid';
+        return getOneToMany($table, $column, $id, $needed);
+    }
+
     static function parse($id)
     {
         $publication = getById(self::$table, $id);
-        if (empty($publication)) {
+        if (empty($publication['title'])) {
             $publication = ElibraryCurl::getPublication($id);
             self::save($publication);
             return true;
@@ -83,6 +94,10 @@ class Publication
 
         if (!empty($publication['refs'])) {
             self::saveRefs($id, $publication['refs']);
+        }
+
+        if (!empty($publication['keywords'])) {
+            self::saveKeywords($id, $publication['keywords']);
         }
 
         return $publication;
@@ -114,6 +129,20 @@ class Publication
             saveRelation($data, $rel_table);
         }
     }
+
+    static function saveKeywords($id, $keywords)
+    {
+        $rel_table = 'publications_to_keywords';
+
+        foreach ($keywords as $keyword) {
+            $data = [
+                'publicationid' => $id,
+                'keywordid' => $keyword
+            ];
+            saveRelation($data, $rel_table);
+        }
+    }
+
 
 
     static function checkAuthors($authors)
