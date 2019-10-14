@@ -78,7 +78,9 @@ while (true) {
                     continue;
                 }
 
-                Author::saveOrganisation($author_organisation, $pub_author);
+                arrayLog($author, 'Автор', 'warning');
+
+                Author::saveOrganisation($pub_author, $author_organisation);
             }
         }
 
