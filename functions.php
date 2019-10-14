@@ -170,12 +170,61 @@ function getOneToMany($table, $column, $value, $needed_column, $limit = 0)
 }
 
 
+function getAccounts()
+{
+    global $accounts_list;
+    $accounts_list = array();
+
+    $url = 'http://localhost/accounts.txt';
+
+    $data = fetchNoProxy($url);
+
+    $lines = preg_split('/\n/m', trim($data));
+
+    $info = array();
+
+    foreach ($lines as $line) {
+        $split = explode(':', $line);
+        $info['login'] = trim($split[1]);
+        $info['password'] = trim($split[2]);
+
+        $accounts_list[] = $info;
+    }
+
+    return $accounts_list;
+}
+
+function updateAuthAccount()
+{
+    global $accounts_list, $elibrary_config;
+
+    if (empty($accounts_list)) {
+        $accounts_list = getAccounts();
+    }
+
+    if (empty($accounts_list)) {
+        arrayLog('', 'Нет аккаунтов для авторизации', 'warning');
+        $elibrary_config['authed'] = false;
+        return false;
+    }
+
+
+    $account = $accounts_list[rand(0, count($accounts_list) - 1)];
+
+    $elibrary_config['login'] = $account['login'];
+    $elibrary_config['password'] = $account['password'];
+    $elibrary_config['authed'] = false;
+
+    return $elibrary_config;
+}
+
+
 function fetch($url, $z = null)
 {
     global $def_proxy_info, $current_user_agent;
 
     $ch = curl_init();
-    $cookiePath = getCookiePath();
+    $cookiePath = getCookiePath(1);
 
     if (!empty($z['params'])) {
         $url .= '?' . http_build_query($z['params']);
@@ -236,6 +285,7 @@ function fetchProxy($url, $z = null)
         if ($k > 3) {
             return false;
         }
+
 
         $result = fetch($url, $z);
 
@@ -489,8 +539,6 @@ function dataSetD3Format($length = 2)
 
 
     }
-
-
 
 
     return $data;
