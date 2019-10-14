@@ -2,9 +2,13 @@
 
 $cookiePath = dirname(__FILE__) . '/cookie.txt';
 $cookiePath1 = dirname(__FILE__) . '\cookie.txt';
+
+$accounts_list = array();
+
 $elibrary_config = [
-    'login' => 'kapipoh',
-    'password' => 'qwerty123',
+    'login' => '',
+    'password' => '',
+    'authed' => false,
     'base_url' => 'https://elibrary.ru/'
 ];
 

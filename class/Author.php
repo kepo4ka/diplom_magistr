@@ -10,6 +10,8 @@ class Author
     static function get($id, $full = false)
     {
         $author = getById(self::$table, $id);
+        $author['publications'] = array();
+        $author['organisations'] = array();
 
         if (!empty($author)) {
             if ($full) {

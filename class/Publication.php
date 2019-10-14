@@ -9,6 +9,9 @@ class Publication
     static function get($id, $full = false)
     {
         $publication = getById(self::$table, $id);
+        $publication['refs'] = array();
+        $publication['authors'] = array();
+        $publication['organisations'] = array();
 
         if (!empty($publication)) {
             if ($full) {

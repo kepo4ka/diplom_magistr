@@ -10,6 +10,8 @@ class Organisation
     static function get($id, $full = false)
     {
         $organisation = getById(self::$table, $id);
+        $organisation['publications'] = array();
+        $organisation['authors'] = array();
 
         if (!empty($organisation)) {
             if ($full) {

@@ -30,7 +30,16 @@ class ElibraryCurl
             'login' => $elibrary_config['login'],
             'password' => $elibrary_config['password']
         ];
+
+
         $parsed_html = fetchProxy($url, $data);
+
+        if (!empty($parsed_html)) {
+            $elibrary_config['authed'] = true;
+        }
+
+//        echoVarDumpPre($parsed_html);
+
         return $parsed_html;
     }
 
@@ -173,21 +182,26 @@ class ElibraryCurl
         $publication['authors'] = array();
         $publication['refs'] = array();
 
-//        if (!$this->checkLogin()) {
-//            $this->login();
-//        }
+
+        if (!$elibrary_config['authed']) {
+            if (!self::checkLogin(self::login())) {
+                $elibrary_config['authed'] = false;
+                arrayLog($elibrary_config, 'Не удалось авторизоваться', 'error');
+            }
+        }
+
 
 
         $url = $elibrary_config['base_url'] . '/' . 'item.asp';
         $data['params'] = ['id' => $id];
         $parsed_html = fetchProxy($url, $data);
 
+
         $data = str_get_html($parsed_html);
 
         if (empty($parsed_html) || empty($data)) {
             return false;
         }
-
 
         $title = $data->find('.bigtext', 0)->plaintext;
         $publication['title'] = $title;
@@ -245,9 +259,12 @@ class ElibraryCurl
         global $elibrary_config;
         $ref_publications = array();
 
-//        if (!$this->checkLogin()) {
-//            $this->login();
-//        }
+        if (!$elibrary_config['authed']) {
+            if (!self::checkLogin(self::login())) {
+                $elibrary_config['authed'] = false;
+                arrayLog($elibrary_config, 'Не удалось авторизоваться', 'error');
+            }
+        }
 
         $url = $elibrary_config['base_url'] . '/' . 'get_item_refs.asp';
         $data['params'] = ['id' => $id,

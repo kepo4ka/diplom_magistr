@@ -34,35 +34,6 @@ class ProxyDB
         return $proxy_list;
     }
 
-    static function ban($proxy)
-    {
-        global $db;
-        $table = 'bad_proxy';
-        $data['proxy'] = $proxy;
-
-        $query = 'INSERT INTO ?n SET ?u';
-        return $db->query($query, $table, $data);
-    }
-
-    static function isBanned($proxy)
-    {
-        global $db;
-        $table = 'bad_proxy';
-        $column = 'proxy';
-        $query = 'SELECT ?n FROM ?n WHERE ?n=?s';
-        return $db->getOne($query, $column, $table, $column, $proxy);
-    }
-
-    static function clearBanList()
-    {
-        global $db;
-        $table = 'bad_proxy';
-        $query = 'DELETE FROM ?n WHERE 1';
-
-        return $db->query($query, $table);
-    }
-
-
     static function getGoogle()
     {
         $url = 'https://google.ru/';
@@ -116,7 +87,7 @@ class ProxyDB
 
     static function update()
     {
-        global $proxy_list, $def_proxy_info, $current_user_agent, $user_agents;
+        global $proxy_list, $def_proxy_info, $current_user_agent, $user_agents, $elibrary_config;
 
 
         if (empty($proxy_list)) {
@@ -129,6 +100,8 @@ class ProxyDB
         $index = rand(0, count($user_agents) - 1);
         $current_user_agent = $user_agents[$index];
         @unlink(getCookiePath(1));
+
+        $elibrary_config = updateAuthAccount();
 
         arrayLog('New Proxy: ' . $def_proxy_info['full'], 'Change Proxy');
 

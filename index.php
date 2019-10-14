@@ -1,12 +1,10 @@
 <?php
 
 include 'init.php';
-
-
-$proxy_list = ProxyDB::getList();
-
 $proccess_id = substr(md5(microtime()), 0, 5);
 
+$proxy_list = ProxyDB::getList();
+updateAuthAccount();
 
 $elibCurl = new ElibraryCurl();
 
@@ -23,18 +21,10 @@ if (empty($_REQUEST['start'])) {
 
 
 $query_count = 1;
-
-$list = array();
-
 $start = microtime(true);
-
 arrayLog('Work Started', 'Start', 'start');
-
 ProxyDB::update();
 
-foreach ($users as $id => $user) {
-    // just process $user as usual
-}
 
 $filter = array();
 $filter['publicationid'] = 39204055;
@@ -42,7 +32,6 @@ $filter['authorid'] = 1001122;
 
 $res = ElibraryCurl::getPublication();
 echoVarDumpPre($res);
-
 
 
 /*
