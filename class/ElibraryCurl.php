@@ -191,7 +191,6 @@ class ElibraryCurl
     }
 
 
-
     static function checkIpBan($html)
     {
         if (empty($html)) {
@@ -267,12 +266,9 @@ class ElibraryCurl
         $matches = array();
         preg_match_all('/<a href=\"keyword_items\.asp\?id=(\d+)\">(.+?)<\/a>/m', $parsed_html, $matches);
 
-        $keywords = array();
-
         if (!empty($matches[1])) {
-            $keywords[] = $matches[1];
+            $publication['keywords'] = $matches[1];
         }
-        $publication['keywords'] = $keywords;
 
 
         $refs = $data->find('a[title=Перейти на описание цитируемой публикации]');
