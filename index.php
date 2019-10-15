@@ -98,6 +98,7 @@ while (true) {
 
         foreach ($publication['refs'] as $pub_ref) {
             $ref = Publication::get($pub_ref, true);
+            echoVarDumpPre($ref);
 
             if (empty($ref)) {
                 continue;
