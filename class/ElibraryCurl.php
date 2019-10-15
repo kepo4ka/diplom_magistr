@@ -268,12 +268,9 @@ class ElibraryCurl
         preg_match_all('/<a href=\"keyword_items\.asp\?id=(\d+)\">(.+?)<\/a>/m', $parsed_html, $matches);
 
         $keywords = array();
-        $keyword = array();
 
         if (!empty($matches[1])) {
-            $keyword['id'] = $matches[1];
-            $keyword['name'] = $matches[2];
-            $keywords[] = $keyword;
+            $keywords[] = $matches[1];
         }
         $publication['keywords'] = $keywords;
 
