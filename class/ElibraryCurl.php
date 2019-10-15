@@ -312,11 +312,15 @@ class ElibraryCurl
 
         $data = str_get_html($parsed_html);
 
+        if (empty($parsed_html) || empty($data)) {
+            return false;
+        }
+
+
         $refs = $data->find('a[title=Перейти на описание цитируемой публикации]');
 
         foreach ($refs as $ref) {
             $ref_id = checkRegular('/item.asp\?id=(\d+)/m', $ref->href);
-
             $ref_publications[] = $ref_id;
         }
 
