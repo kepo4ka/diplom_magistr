@@ -551,6 +551,10 @@ class SafeMySQL
         if ($value === NULL) {
             return 'NULL';
         }
+        if (is_array($value)) {
+            echoVarDumpPre($value);
+        }
+
         return "'" . mysqli_real_escape_string($this->conn, $value) . "'";
     }
 
@@ -599,7 +603,6 @@ class SafeMySQL
         }
         return $query;
     }
-
 
 
     protected function error($err)
