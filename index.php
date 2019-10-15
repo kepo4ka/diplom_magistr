@@ -14,6 +14,10 @@ if (!empty($_REQUEST['org_id'])) {
     $org_id = preg_replace('/[^\d]+/m', '', $_REQUEST['org_id']);
 }
 
+if (!empty($_REQUEST['nsleep'])) {
+    $sleep_mode = false;
+}
+
 if (empty($_REQUEST['start'])) {
     echo "Недостаточно прав.";
     exit;
