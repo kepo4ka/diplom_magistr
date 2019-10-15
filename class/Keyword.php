@@ -41,7 +41,7 @@ class Keyword
     {
         $table = 'publications_to_keywords';
         $needed = 'publicationid';
-        $column = 'keyword';
+        $column = 'keywordid';
         return getOneToMany($table, $column, $id, $needed);
     }
 
