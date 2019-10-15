@@ -141,7 +141,7 @@ while (true) {
                 arrayLog($ref_key['name'], 'Работа со ключевым словом ссылочной статьи ' . $ref_key['id']);
 
 
-                Publication::saveKeyword($pub_ref, $ref_key);
+                Publication::saveKeyword($pub_ref, $ref_keyword);
             }
 
 //            foreach ($ref['publications'] as $ref_publication) {
