@@ -131,17 +131,17 @@ while (true) {
             }
 
 
-            foreach ($ref['keywords'] as $kkkeyword) {
-                $kkeyword = Keyword::get($kkkeyword);
+            foreach ($ref['keywords'] as $ref_keyword) {
+                $ref_key = Keyword::get($ref_keyword);
 
-                if (empty($kkkeyword)) {
+                if (empty($ref_key)) {
                     continue;
                 }
 
-                arrayLog($kkkeyword['name'], 'Работа со ключевым словом ссылочной статьи ' . $kkkeyword['id']);
+                arrayLog($ref_key['name'], 'Работа со ключевым словом ссылочной статьи ' . $ref_key['id']);
 
 
-                Publication::saveKeyword($pub_ref, $kkkeyword);
+                Publication::saveKeyword($pub_ref, $ref_key);
             }
 
 //            foreach ($ref['publications'] as $ref_publication) {
