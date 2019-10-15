@@ -51,7 +51,7 @@ while (true) {
             continue;
         }
 
-        arrayLog($publication, 'Работа со статьей ' . $publication['id']);
+        arrayLog($publication['title'], 'Работа со статьей ' . $publication['id']);
 
         Organisation::savePublication($org_id, $publication['id']);
 
@@ -63,7 +63,7 @@ while (true) {
                 continue;
             }
 
-            arrayLog($author, 'Работа со автором статьи ' . $author['id']);
+            arrayLog($author['fio'], 'Работа со автором статьи ' . $author['id']);
 
             Author::savePublication($pub_author, $org_publication);
 
@@ -86,7 +86,7 @@ while (true) {
                     continue;
                 }
 
-                arrayLog($org, 'Работа со организацией автора ' . $org['id']);
+                arrayLog($org['name'], 'Работа со организацией автора ' . $org['id']);
 
                 Author::saveOrganisation($pub_author, $author_organisation);
             }
@@ -99,7 +99,7 @@ while (true) {
                 continue;
             }
 
-            arrayLog($kkeyword, 'Работа со ключом статьи ' . $kkeyword['id']);
+            arrayLog($kkeyword['name'], 'Работа со ключом статьи ' . $kkeyword['id']);
 
 
             Publication::saveKeyword($org_publication, $keyword);
@@ -113,7 +113,7 @@ while (true) {
                 continue;
             }
 
-            arrayLog($ref, 'Работа со ссылочной статьёй ' . $ref['id']);
+            arrayLog($ref['title'], 'Работа со ссылочной статьёй ' . $ref['id']);
 
             Publication::saveRef($org_publication, $pub_ref);
 
@@ -124,7 +124,7 @@ while (true) {
                     continue;
                 }
 
-                arrayLog($aauthor, 'Работа со автором ссылочной статьи ' . $aauthor['id']);
+                arrayLog($aauthor['fio'], 'Работа со автором ссылочной статьи ' . $aauthor['id']);
 
 
                 Publication::saveAuthor($pub_ref, $ref_author);
@@ -132,14 +132,13 @@ while (true) {
 
 
             foreach ($ref['keywords'] as $kkkeyword) {
-                echoVarDumpPre($ref);
                 $kkeyword = Keyword::get($kkkeyword);
 
                 if (empty($kkkeyword)) {
                     continue;
                 }
 
-                arrayLog($kkkeyword, 'Работа со ключевым словом ссылочной статьи ' . $kkkeyword['id']);
+                arrayLog($kkkeyword['name'], 'Работа со ключевым словом ссылочной статьи ' . $kkkeyword['id']);
 
 
                 Publication::saveKeyword($pub_ref, $kkkeyword);
