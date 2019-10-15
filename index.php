@@ -126,7 +126,9 @@ while (true) {
                 Publication::saveAuthor($pub_ref, $ref_author);
             }
 
+
             foreach ($ref['keywords'] as $keyword) {
+                echoVarDumpPre($ref);
                 $kkeyword = Keyword::get($keyword);
 
                 if (empty($kkeyword)) {
