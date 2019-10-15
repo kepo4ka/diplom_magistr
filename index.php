@@ -85,6 +85,8 @@ while (true) {
         }
 
         foreach ($publication['keywords'] as $keyword) {
+
+            echoVarDumpPre($publication);
             $kkeyword = Keyword::get($keyword);
             if (empty($kkeyword)) {
                 continue;
