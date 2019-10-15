@@ -47,6 +47,8 @@ while (true) {
             continue;
         }
 
+        arrayLog($publication, 'Работа со статьей ' . $publication['id']);
+
         Organisation::savePublication($org_id, $publication['id']);
 
 
@@ -56,6 +58,8 @@ while (true) {
             if (empty($author)) {
                 continue;
             }
+
+            arrayLog($author, 'Работа со автором статьи ' . $author['id']);
 
             Author::savePublication($pub_author, $org_publication);
 
@@ -78,7 +82,7 @@ while (true) {
                     continue;
                 }
 
-                arrayLog($author, 'Автор', 'warning');
+                arrayLog($org, 'Работа со организацией автора ' . $org['id']);
 
                 Author::saveOrganisation($pub_author, $author_organisation);
             }
@@ -86,11 +90,13 @@ while (true) {
 
         foreach ($publication['keywords'] as $keyword) {
 
-            echoVarDumpPre($publication);
             $kkeyword = Keyword::get($keyword);
             if (empty($kkeyword)) {
                 continue;
             }
+
+            arrayLog($kkeyword, 'Работа со ключом статьи ' . $kkeyword['id']);
+
 
             Publication::saveKeyword($org_publication, $keyword);
         }
@@ -104,6 +110,8 @@ while (true) {
                 continue;
             }
 
+            arrayLog($ref, 'Работа со ссылочной статьёй ' . $ref['id']);
+
             Publication::saveRef($org_publication, $pub_ref);
 
             foreach ($ref['authors'] as $ref_author) {
@@ -112,6 +120,9 @@ while (true) {
                 if (empty($aauthor)) {
                     continue;
                 }
+
+                arrayLog($aauthor, 'Работа со автором ссылочной статьи ' . $aauthor['id']);
+
 
                 Publication::saveAuthor($pub_ref, $ref_author);
             }
@@ -122,6 +133,9 @@ while (true) {
                 if (empty($kkeyword)) {
                     continue;
                 }
+
+                arrayLog($kkeyword, 'Работа со ключевым словом ссылочной статьи ' . $kkeyword['id']);
+
 
                 Publication::saveKeyword($pub_ref, $keyword);
             }
