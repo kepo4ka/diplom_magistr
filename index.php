@@ -113,7 +113,7 @@ while (true) {
                 continue;
             }
 
-            arrayLog($ref['title'], 'Работа со ссылочной статьёй ' . $ref['id']);
+            arrayLog($ref, 'Работа со ссылочной статьёй ' . $ref['id']);
 
             Publication::saveRef($org_publication, $pub_ref);
 
