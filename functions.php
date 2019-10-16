@@ -290,7 +290,8 @@ function fetchProxy($url, $z = null)
 
         $result = fetch($url, $z);
 
-        $log = $query_count . '. ' . $def_proxy_info['full'] . ' - ' . $url;
+        $log['proxy'] = $query_count . '. ' . $def_proxy_info['full'] . ' - ' . $url;
+        $log['z'] = $z;
         arrayLog($log, 'Usual Request', 'secondary');
 
         $query_count++;
