@@ -213,6 +213,7 @@ class ElibraryCurl
         $publication['authors'] = array();
         $publication['refs'] = array();
         $publication['keywords'] = array();
+        $publication['keywords_full'] = array();
 
         if (!$elibrary_config['authed']) {
             if (!self::checkLogin(self::login())) {
@@ -268,6 +269,12 @@ class ElibraryCurl
 
         if (!empty($matches[1])) {
             $publication['keywords'] = $matches[1];
+
+            foreach ($matches[1] as $key => $value) {
+                if (!empty($matches[1][$key]) && !empty($matches[2][$key])) {
+                    $publication['keywords_full'][] = ['id' => $matches[1][$key], 'name' => $matches[2][$key]];
+                }
+            }
         }
 
 
