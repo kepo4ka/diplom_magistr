@@ -43,6 +43,7 @@ while (true) {
     $org_publications = Organisation::parsePublicationsPart($org_id, $paganum);
     $paganum++;
 
+    arrayLog('', 'Полученные статьи организации на странице ' . $paganum);
 
     foreach ($org_publications as $org_publication) {
         $publication = Publication::get($org_publication, true);
