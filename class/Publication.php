@@ -16,11 +16,13 @@ class Publication
             $publication['authors'] = array();
             $publication['organisations'] = array();
             $publication['keywords'] = array();
+            $publication['keywords_full'] = array();
 
             if ($full) {
                 $publication['refs'] = self::getRefs($id);
                 $publication['authors'] = self::getAuthors($id);
                 $publication['organisations'] = self::getOrganisations($id);
+                $publication['keywords'] = self::getKeywords($id);
                 $publication['keywords'] = self::getKeywords($id);
             }
         } else {
