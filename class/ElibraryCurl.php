@@ -149,6 +149,12 @@ class ElibraryCurl
 
         $res = $data->find('form[name=results]');
         $matches = array();
+
+        if (empty($res[0])) {
+            $data->clear();
+            return $publications;
+        }
+
         preg_match_all('/id="arw(\d+)"/m', $res[0], $matches);
 
         if (!empty($matches[1])) {
