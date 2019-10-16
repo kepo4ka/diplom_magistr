@@ -300,6 +300,7 @@ class ElibraryCurl
         $data->clear();
 
         if (empty($publication['title'])) {
+            echoVarDumpPre($parsed_html);
             return false;
         }
 
