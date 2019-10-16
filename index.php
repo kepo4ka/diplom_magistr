@@ -36,8 +36,8 @@ $filter['authorid'] = 1001122;
 
 $organisation = Organisation::get($org_id, true);
 
-$paganum = 1;
 
+$paganum = 1;
 
 while (true) {
     $org_publications = Organisation::parsePublicationsPart($org_id, $paganum);
@@ -93,17 +93,15 @@ while (true) {
             }
         }
 
-        foreach ($publication['keywords'] as $keyword) {
-
-            $kkeyword = Keyword::get($keyword);
-            if (empty($kkeyword)) {
+        foreach ($publication['keywords_full'] as $keyword) {
+            if (empty($keyword)) {
                 continue;
             }
 
-            arrayLog($kkeyword['name'], 'Работа со ключом статьи ' . $kkeyword['id']);
+            arrayLog($keyword['name'], 'Работа со ключом статьи ' . $keyword['id']);
 
-
-            Publication::saveKeyword($org_publication, $keyword);
+            Keyword::save($keyword);
+            Publication::saveKeyword($org_publication, $keyword['id']);
         }
 
 
@@ -127,22 +125,19 @@ while (true) {
 
                 arrayLog($aauthor['fio'], 'Работа со автором ссылочной статьи ' . $aauthor['id']);
 
-
                 Publication::saveAuthor($pub_ref, $ref_author);
             }
 
 
-            foreach ($ref['keywords'] as $ref_keyword) {
-                $ref_key = Keyword::get($ref_keyword);
-
+            foreach ($ref['keywords_full'] as $ref_key) {
                 if (empty($ref_key)) {
                     continue;
                 }
-
+                
                 arrayLog($ref_key['name'], 'Работа со ключевым словом ссылочной статьи ' . $ref_key['id']);
 
-
-                Publication::saveKeyword($pub_ref, $ref_keyword);
+                Keyword::save($ref_key);
+                Publication::saveKeyword($pub_ref, $ref_key['id']);
             }
 
 //            foreach ($ref['publications'] as $ref_publication) {
