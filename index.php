@@ -45,6 +45,10 @@ while (true) {
 
     arrayLog('', 'Полученные статьи организации на странице ' . $paganum);
 
+    if (empty($org_publications)) {
+        break;
+    }
+
     foreach ($org_publications as $org_publication) {
         $publication = Publication::get($org_publication, true);
 
@@ -133,7 +137,7 @@ while (true) {
                 if (empty($ref_key)) {
                     continue;
                 }
-                
+
                 arrayLog($ref_key['name'], 'Работа со ключевым словом ссылочной статьи ' . $ref_key['id']);
 
                 Keyword::save($ref_key);
