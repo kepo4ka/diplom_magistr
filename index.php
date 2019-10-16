@@ -68,7 +68,7 @@ while (true) {
                 continue;
             }
 
-            arrayLog($author['fio'], 'Работа со автором статьи ' . $author['id']);
+//            arrayLog($author['fio'], 'Работа со автором статьи ' . $author['id']);
 
             Author::savePublication($pub_author, $org_publication);
 
@@ -91,7 +91,7 @@ while (true) {
                     continue;
                 }
 
-                arrayLog($org['name'], 'Работа со организацией автора ' . $org['id']);
+//                arrayLog($org['name'], 'Работа со организацией автора ' . $org['id']);
 
                 Author::saveOrganisation($pub_author, $author_organisation);
             }
@@ -102,7 +102,7 @@ while (true) {
                 continue;
             }
 
-            arrayLog($keyword['name'], 'Работа со ключом статьи ' . $keyword['id']);
+//            arrayLog($keyword['name'], 'Работа со ключом статьи ' . $keyword['id']);
 
             Keyword::save($keyword);
             Publication::saveKeyword($org_publication, $keyword['id']);
@@ -116,7 +116,7 @@ while (true) {
                 continue;
             }
 
-            arrayLog($ref, 'Работа со ссылочной статьёй ' . $ref['id']);
+//            arrayLog($ref, 'Работа со ссылочной статьёй ' . $ref['id']);
 
             Publication::saveRef($org_publication, $pub_ref);
 
@@ -127,22 +127,25 @@ while (true) {
                     continue;
                 }
 
-                arrayLog($aauthor['fio'], 'Работа со автором ссылочной статьи ' . $aauthor['id']);
+//                arrayLog($aauthor['fio'], 'Работа со автором ссылочной статьи ' . $aauthor['id']);
 
                 Publication::saveAuthor($pub_ref, $ref_author);
             }
 
 
-            foreach ($ref['keywords_full'] as $ref_key) {
-                if (empty($ref_key)) {
-                    continue;
-                }
+         if (!empty($publication['keywords_full']))
+         {
+             foreach ($ref['keywords_full'] as $ref_key) {
+                 if (empty($ref_key)) {
+                     continue;
+                 }
 
-                arrayLog($ref_key['name'], 'Работа со ключевым словом ссылочной статьи ' . $ref_key['id']);
+//                arrayLog($ref_key['name'], 'Работа со ключевым словом ссылочной статьи ' . $ref_key['id']);
 
-                Keyword::save($ref_key);
-                Publication::saveKeyword($pub_ref, $ref_key['id']);
-            }
+                 Keyword::save($ref_key);
+                 Publication::saveKeyword($pub_ref, $ref_key['id']);
+             }
+         }
 
 //            foreach ($ref['publications'] as $ref_publication) {
 //                Publication::get($ref_publication);
