@@ -32,7 +32,7 @@ class ProxyDB
             }
             $proxy_info['full'] = $proxy;
             $proxy_info['auth'] = $auth;
-            $proxy_info['type'] = CURLPROXY_HTTP;
+            $proxy_info['type'] = CURLPROXY_SOCKS5;
             $proxy_list[] = $proxy_info;
         }
 
