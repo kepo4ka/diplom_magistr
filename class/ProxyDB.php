@@ -108,6 +108,13 @@ class ProxyDB
         return true;
     }
 
+    static function myproxySet($proxy)
+    {
+        global $def_proxy_info;
+        $def_proxy_info['full'] = $proxy;
+    }
+
+
 }
 
 
