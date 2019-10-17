@@ -37,6 +37,17 @@ arrayLog(array('Work Started'), 'Start', 'start');
 ProxyDB::update();
 
 
+//$z = array();
+//$z['proxy'] = array();
+//$z['proxy']['full'] = '185.204.208.78:8080';
+//$z['proxy']['type'] = CURLPROXY_HTTP;
+//$z['proxy']['auth'] = ':';
+//
+//$res = fetch('https://elibrary.ru/item.asp?id=27517846', $z);
+////$res = fetch('https://google.ru', $z);
+//echoVarDumpPre($res);
+
+
 $filter = array();
 $filter['publicationid'] = 39204055;
 $filter['authorid'] = 1001122;
