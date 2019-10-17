@@ -22,9 +22,14 @@ class ProxyDB
         $proxy_info = array();
 
         foreach ($lines as $line) {
-            $split = explode('@', $line);
-            $proxy = trim($split[1]);
-            $auth = trim($split[0]);
+            if (preg_match('/@/m', $line)) {
+                $split = explode('@', $line);
+                $proxy = trim($split[1]);
+                $auth = trim($split[0]);
+            } else {
+                $proxy = trim($line);
+                $auth = '';
+            }
             $proxy_info['full'] = $proxy;
             $proxy_info['auth'] = $auth;
             $proxy_info['type'] = CURLPROXY_HTTP;
