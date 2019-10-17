@@ -43,12 +43,12 @@ $filter['authorid'] = 1001122;
 
 $organisation = Organisation::get($org_id, true);
 
-
 while (true) {
     $org_publications = Organisation::parsePublicationsPart($org_id, $pagenum);
-    $pagenum++;
 
     arrayLog('', 'Полученные статьи организации на странице ' . $pagenum);
+
+    $pagenum++;
 
     if (empty($org_publications)) {
         break;
