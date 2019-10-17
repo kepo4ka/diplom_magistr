@@ -240,7 +240,12 @@ class ElibraryCurl
             return false;
         }
 
-        $title = $data->find('.bigtext', 0)->plaintext;
+        $title_selector = $data->find('.bigtext', 0);
+        $title = '';
+
+        if (!empty($title_selector)) {
+            $title = $title_selector->plaintext;
+        }
         $publication['title'] = $title;
 
 
