@@ -14,6 +14,13 @@ if (!empty($_REQUEST['org_id'])) {
     $org_id = preg_replace('/[^\d]+/m', '', $_REQUEST['org_id']);
 }
 
+$pagenum = 1;
+
+if (!empty($_REQUEST['pagenum'])) {
+    $pagenum = preg_replace('/[^\d]+/m', '', $_REQUEST['pagenum']);
+}
+
+
 if (!empty($_REQUEST['nsleep'])) {
     $sleep_mode = false;
 }
@@ -26,7 +33,7 @@ if (empty($_REQUEST['start'])) {
 
 $query_count = 1;
 $start = microtime(true);
-arrayLog('Work Started', 'Start', 'start');
+arrayLog(array('Work Started'), 'Start', 'start');
 ProxyDB::update();
 
 
@@ -37,13 +44,11 @@ $filter['authorid'] = 1001122;
 $organisation = Organisation::get($org_id, true);
 
 
-$paganum = 1;
-
 while (true) {
-    $org_publications = Organisation::parsePublicationsPart($org_id, $paganum);
-    $paganum++;
+    $org_publications = Organisation::parsePublicationsPart($org_id, $pagenum);
+    $pagenum++;
 
-    arrayLog('', 'Полученные статьи организации на странице ' . $paganum);
+    arrayLog('', 'Полученные статьи организации на странице ' . $pagenum);
 
     if (empty($org_publications)) {
         break;
@@ -61,7 +66,6 @@ while (true) {
         Organisation::savePublication($org_id, $publication['id']);
 
 
-
         foreach ($publication['authors'] as $pub_author) {
             $author = Author::get($pub_author, true);
 
@@ -73,8 +77,8 @@ while (true) {
 
             Author::savePublication($pub_author, $org_publication);
 
-//            $paganum1 = 1;
-//            while ($author_publications_part = Author::parsePublicationsPart($pub_author, $paganum1)) {
+//            $pagenum1 = 1;
+//            while ($author_publications_part = Author::parsePublicationsPart($pub_author, $pagenum1)) {
 //                $ppublication = Publication::get($author_publications_part);
 //
 //                if (empty($publication)) {
@@ -82,7 +86,7 @@ while (true) {
 //                }
 //
 //                Author::savePublication($pub_author, $ppublication);
-//                $paganum1++;
+//                $pagenum1++;
 //            }
 
             foreach ($author['organisations'] as $author_organisation) {
@@ -134,19 +138,18 @@ while (true) {
             }
 
 
-         if (!empty($publication['keywords_full']))
-         {
-             foreach ($ref['keywords_full'] as $ref_key) {
-                 if (empty($ref_key)) {
-                     continue;
-                 }
+            if (!empty($publication['keywords_full'])) {
+                foreach ($ref['keywords_full'] as $ref_key) {
+                    if (empty($ref_key)) {
+                        continue;
+                    }
 
 //                arrayLog($ref_key['name'], 'Работа со ключевым словом ссылочной статьи ' . $ref_key['id']);
 
-                 Keyword::save($ref_key);
-                 Publication::saveKeyword($pub_ref, $ref_key['id']);
-             }
-         }
+                    Keyword::save($ref_key);
+                    Publication::saveKeyword($pub_ref, $ref_key['id']);
+                }
+            }
 
 //            foreach ($ref['publications'] as $ref_publication) {
 //                Publication::get($ref_publication);
