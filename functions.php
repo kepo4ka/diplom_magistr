@@ -245,13 +245,25 @@ function fetch($url, $z = null)
         curl_setopt($ch, CURLOPT_PROXYUSERPWD, $def_proxy_info['auth']);
     }
 
+    if (!empty($z['proxy'])) {
+        curl_setopt($ch, CURLOPT_PROXYTYPE, $z['proxy']['type']);
+        curl_setopt($ch, CURLOPT_PROXY, $z['proxy']['full']);
+//        curl_setopt($ch, CURLOPT_PROXYUSERPWD, $z['proxy']['auth']);
+    }
+
+
     if (isset($z['refer'])) {
         curl_setopt($ch, CURLOPT_REFERER, $z['refer']);
     }
 
 //    echoVarDumpPre($useragent);
     curl_setopt($ch, CURLOPT_USERAGENT, $useragent);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, (isset($z['timeout']) ? $z['timeout'] : 5));
+
+//    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, (isset($z['timeout']) ? $z['timeout'] : 5));
+
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,0);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+
     curl_setopt($ch, CURLOPT_COOKIEJAR, $cookiePath);
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookiePath);
 
@@ -260,6 +272,12 @@ function fetch($url, $z = null)
 //        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 
     $result = curl_exec($ch);
+
+//    if (empty($result))
+//    {
+//        return curl_getinfo($ch);
+//    }
+
     curl_close($ch);
 
     return $result;
@@ -286,7 +304,6 @@ function fetchProxy($url, $z = null)
         if ($k > 3) {
             return false;
         }
-
 
         $result = fetch($url, $z);
 
@@ -329,8 +346,6 @@ function fetchProxy($url, $z = null)
 
         ProxyDB::deleteProxy($def_proxy_info);
         arrayLog($log, $message, 'error');
-
-        echoVarDumpPre($result);
 
         $result = fetchProxy($url, $z);
     }
