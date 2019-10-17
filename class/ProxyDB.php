@@ -13,7 +13,7 @@ class ProxyDB
         global $proxy_list;
 
         $proxy_list = array();
-        $url = 'http://localhost/proxy_list.txt';
+        $url = 'http://localhost/elibrary/proxy_list.txt';
 
         $data = fetchNoProxy($url);
 
