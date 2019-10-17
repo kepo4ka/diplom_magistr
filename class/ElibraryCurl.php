@@ -203,7 +203,7 @@ class ElibraryCurl
             return false;
         }
 
-        return preg_match('/нарушения/m', $html);
+        return preg_match('/Из-за нарушения правил пользования сайтом eLIBRARY/m', $html);
 
     }
 
