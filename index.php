@@ -61,6 +61,7 @@ while (true) {
         Organisation::savePublication($org_id, $publication['id']);
 
 
+
         foreach ($publication['authors'] as $pub_author) {
             $author = Author::get($pub_author, true);
 
