@@ -176,7 +176,7 @@ function getAccounts()
     global $accounts_list;
     $accounts_list = array();
 
-    $url = 'http://localhost/accounts.txt';
+    $url = 'http://localhost/elibrary/accounts.txt';
 
     $data = fetchNoProxy($url);
 
