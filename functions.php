@@ -297,21 +297,12 @@ function fetchProxy($url, $z = null)
         $query_count++;
         $k++;
 
-        $checkBan = ElibraryCurl::checkIpBan($result);
-
-        if ($t > 2 || $checkBan) {
-
-
+        if ($t > 2) {
             $log = array();
             $log['proxy'] = $def_proxy_info['full'];
             $log['url'] = $url;
 
-            if ($checkBan) {
-                $message = 'Banned Proxy';
-//                ProxyDB::deleteProxy($def_proxy_info);
-            } else {
-                $message = 'Bad Request';
-            }
+            $message = 'Bad Request';
 
             ProxyDB::update();
 
@@ -326,6 +317,19 @@ function fetchProxy($url, $z = null)
             arrayLog('', 'Sleep ' . $sleep_time . ' s...', 'warning');
             sleep($sleep_time);
         }
+    }
+
+    $checkBan = ElibraryCurl::checkIpBan($result);
+
+    if ($checkBan) {
+        $message = 'Banned Proxy';
+        $log = array();
+        $log['proxy'] = $def_proxy_info['full'];
+        $log['url'] = $url;
+
+        ProxyDB::deleteProxy($def_proxy_info);
+        arrayLog($log, $message, 'error');
+        $result = fetchProxy($url, $z);
     }
 
     return $result;
