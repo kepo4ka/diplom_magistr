@@ -103,7 +103,7 @@ class ProxyDB
 
         $elibrary_config = updateAuthAccount();
 
-        arrayLog('New Proxy: ' . $def_proxy_info['full'], 'Change Proxy');
+        arrayLog(array('New Proxy: ' . $def_proxy_info['full']), 'Change Proxy');
 
         return true;
     }
