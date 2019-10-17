@@ -329,6 +329,9 @@ function fetchProxy($url, $z = null)
 
         ProxyDB::deleteProxy($def_proxy_info);
         arrayLog($log, $message, 'error');
+
+        echoVarDumpPre($result);
+
         $result = fetchProxy($url, $z);
     }
 
