@@ -237,10 +237,9 @@ function fetch($url, $z = null)
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_AUTOREFERER, true);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 200); // http request timeout 20 seconds
 
     if (!empty($def_proxy_info)) {
-        curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+        curl_setopt($ch, CURLOPT_PROXYTYPE, $def_proxy_info['type']);
         curl_setopt($ch, CURLOPT_PROXY, $def_proxy_info['full']);
         curl_setopt($ch, CURLOPT_PROXYUSERPWD, $def_proxy_info['auth']);
     }
@@ -261,7 +260,7 @@ function fetch($url, $z = null)
 
 //    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, (isset($z['timeout']) ? $z['timeout'] : 5));
 
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,0);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
     curl_setopt($ch, CURLOPT_TIMEOUT, 60);
 
     curl_setopt($ch, CURLOPT_COOKIEJAR, $cookiePath);
