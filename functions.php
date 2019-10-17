@@ -271,7 +271,7 @@ function fetchProxy($url, $z = null)
     global $query_count, $def_proxy_info, $delay_min, $delay_max, $sleep_mode;
 
     if ($query_count > 0) {
-        if ($query_count % 7 == 0) {
+        if ($query_count % 4 == 0) {
             ProxyDB::update();
         }
     }
@@ -297,7 +297,7 @@ function fetchProxy($url, $z = null)
         $query_count++;
         $k++;
 
-        if ($t > 2) {
+        if ($t > 1) {
             $log = array();
             $log['proxy'] = $def_proxy_info['full'];
             $log['url'] = $url;
