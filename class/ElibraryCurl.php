@@ -320,7 +320,7 @@ class ElibraryCurl
         if (!$elibrary_config['authed']) {
             if (!self::checkLogin(self::login())) {
                 $elibrary_config['authed'] = false;
-                arrayLog($elibrary_config, 'Не удалось авторизоваться', 'error');
+                arrayLog($elibrary_config, 'Не удалось авторизоваться 1', 'error');
             }
         }
 
