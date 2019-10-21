@@ -2,7 +2,7 @@
 
 require '../init.php';
 
-$length = 10;
+$length = 100;
 
 // $users = \JsonMachine\JsonMachine::fromFile('dblp_papers_v11.json');
 
@@ -53,6 +53,11 @@ $length = 10;
 
 
 <script>
+
+    const primary_field = 'id';
+    const references_field = 'references';
+    const title_field = 'title';
+
     var svg = d3.select("svg"),
         width = +svg.attr("width"),
         height = +svg.attr("height");
@@ -125,7 +130,7 @@ $length = 10;
                 return d.x < 180 ? "start" : "end";
             })
             .text(function (d) {
-                return d.data.title;
+                return d.data[title_field];
             });
     });
 
@@ -155,7 +160,7 @@ $length = 10;
         }
 
         classes.forEach(function (d) {
-            find(d.id, d);
+            find(d[primary_field], d);
         });
 
         return d3.hierarchy(map[""]);
@@ -169,17 +174,17 @@ $length = 10;
 
         // Compute a map from name to node.
         nodes.forEach(function (d) {
-            map[d.data.id] = d;
+            map[d.data[primary_field]] = d;
         });
 
         // For each import, construct a link from the source to target node.
         nodes.forEach(function (d) {
 
 
-            if (d.data.references) {
-                d.data.references.forEach(function (i) {
+            if (d.data[references_field]) {
+                d.data[references_field].forEach(function (i) {
                     try {
-                        imports.push(map[d.data.id].path(map[i]));
+                        imports.push(map[d.data[primary_field]].path(map[i]));
                     }
                     catch (e) {
                         console.warn(i);
