@@ -226,7 +226,9 @@ class ElibraryCurl
 
             if (!self::checkLogin($login)) {
                 $elibrary_config['authed'] = false;
-                arrayLog(array($elibrary_config, $login), 'Не удалось авторизоваться', 'error');
+                $find_login = preg_match('/' . $elibrary_config['login'] . '/m', $login);
+
+                arrayLog(array($elibrary_config, $find_login), 'Не удалось авторизоваться', 'error');
             }
         }
 
