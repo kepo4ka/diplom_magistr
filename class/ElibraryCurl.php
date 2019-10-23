@@ -45,13 +45,10 @@ class ElibraryCurl
 
     static function checkLogin($html = false)
     {
-        global $elibrary_config;
         if (!$html) {
             $html = self::getHome();
         }
-
-        $reg = $elibrary_config['login'];
-        return preg_match("/$reg/", $html);
+        return preg_match("/project_user_office/m", $html);
     }
 
     static function logOut()
