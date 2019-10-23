@@ -222,9 +222,11 @@ class ElibraryCurl
         $publication['keywords_full'] = array();
 
         if (!$elibrary_config['authed']) {
-            if (!self::checkLogin(self::login())) {
+            $login = self::login();
+
+            if (!self::checkLogin($login)) {
                 $elibrary_config['authed'] = false;
-                arrayLog($elibrary_config, 'Не удалось авторизоваться', 'error');
+                arrayLog(array($elibrary_config, $login), 'Не удалось авторизоваться', 'error');
             }
         }
 
