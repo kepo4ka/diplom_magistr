@@ -88,17 +88,10 @@ while (true) {
 
             Author::savePublication($pub_author, $org_publication);
 
-//            $pagenum1 = 1;
-//            while ($author_publications_part = Author::parsePublicationsPart($pub_author, $pagenum1)) {
-//                $ppublication = Publication::get($author_publications_part);
-//
-//                if (empty($publication)) {
-//                    continue;
-//                }
-//
-//                Author::savePublication($pub_author, $ppublication);
-//                $pagenum1++;
-//            }
+            $pagenum1 = 1;
+            while (!empty(Author::parsePublicationsPart($pub_author, $pagenum1))) {
+                $pagenum1++;
+            }
 
             foreach ($author['organisations'] as $author_organisation) {
                 $org = Organisation::get($author_organisation);
