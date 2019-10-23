@@ -521,6 +521,8 @@ function getCookiePath($second = false)
         return false;
     }
 
+    makeDir(dirname(__FILE__) . '\cookies');
+
     $full_path = dirname(__FILE__) . '\cookies/' . $proccess_id . '.txt';
     if ($second) {
         $full_path = dirname(__FILE__) . '\cookies\\' . $proccess_id . '.txt';
@@ -565,4 +567,10 @@ function dataSetD3Format($length = 2)
 
     return $data;
 
+}
+
+
+function makeDir($path)
+{
+    return is_dir($path) || mkdir($path);
 }
