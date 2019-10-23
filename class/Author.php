@@ -198,8 +198,8 @@ class Author
     static function parsePublicationsPart($id, $pagenum = 1)
     {
         $publications = ElibraryCurl::getAuthorPublications($id, $pagenum);
-//        self::savePublications($id, $publications);
-//        self::checkPublications($publications);
+        self::savePublications($id, $publications);
+        self::checkPublications($publications);
         return $publications;
     }
 
