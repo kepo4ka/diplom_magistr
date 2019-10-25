@@ -23,10 +23,28 @@ class Publication
                 $publication['authors'] = self::getAuthors($id);
                 $publication['organisations'] = self::getOrganisations($id);
                 $publication['keywords'] = self::getKeywords($id);
-                $publication['keywords'] = self::getKeywords($id);
             }
         } else {
             $publication = ElibraryCurl::getPublication($id);
+
+            if (!empty($publication['authors'])) {
+                foreach ($publication['authors'] as $author_id) {
+                    $author = Author::get($author_id, true);
+
+                    if (!empty($author['organisations'])) {
+                        foreach ($author['organisations'] as $organisation_id) {
+                            Organisation::savePublication($organisation_id, $id);
+                        }
+                    }
+                }
+            }
+
+            if (!empty($publication['keywords_full'])) {
+                foreach ($publication['keywords_full'] as $keyword) {
+                    Keyword::save($keyword);
+                }
+            }
+
             self::save($publication);
         }
         return $publication;
@@ -69,6 +87,25 @@ class Publication
         $publication = getById(self::$table, $id);
         if (empty($publication['title'])) {
             $publication = ElibraryCurl::getPublication($id);
+
+            if (!empty($publication['authors'])) {
+                foreach ($publication['authors'] as $author_id) {
+                    $author = Author::get($author_id, true);
+
+                    if (!empty($author['organisations'])) {
+                        foreach ($author['organisations'] as $organisation_id) {
+                            Organisation::savePublication($organisation_id, $id);
+                        }
+                    }
+
+                    if (!empty($publication['keywords_full'])) {
+                        foreach ($publication['keywords_full'] as $keyword) {
+                            Keyword::save($keyword);
+                        }
+                    }
+                }
+            }
+
             self::save($publication);
             return true;
         }
