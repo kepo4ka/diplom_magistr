@@ -27,14 +27,13 @@ class Author
             }
         } else {
             $author = ElibraryCurl::getAuthorInfo($id);
-
-            if (!empty($author['organisations'])) {
-                foreach ($author['organisations'] as $organisation_id) {
-                    Organisation::get($organisation_id, true);
-                }
-            }
-
             self::save($author);
+        }
+
+        if (!empty($author['organisations'])) {
+            foreach ($author['organisations'] as $organisation_id) {
+                Organisation::get($organisation_id, true);
+            }
         }
 
         return $author;
@@ -43,12 +42,21 @@ class Author
     static function parse($id)
     {
         $author = getById(self::$table, $id);
+
         if (empty($author)) {
             $author = ElibraryCurl::getAuthorInfo($id);
-            self::save($author);
-            return true;
+            $res = self::save($author);
+            if (empty($res)) {
+                return false;
+            }
+        } else {
+            if (!empty($author['organisations'])) {
+                foreach ($author['organisations'] as $organisation_id) {
+                    Organisation::get($organisation_id, true);
+                }
+            }
         }
-        return false;
+        return true;
     }
 
 
