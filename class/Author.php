@@ -27,6 +27,13 @@ class Author
             }
         } else {
             $author = ElibraryCurl::getAuthorInfo($id);
+
+            if (!empty($author['organisations'])) {
+                foreach ($author['organisations'] as $organisation_id) {
+                    Organisation::get($organisation_id, true);
+                }
+            }
+
             self::save($author);
         }
 
