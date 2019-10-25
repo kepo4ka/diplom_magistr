@@ -119,7 +119,7 @@ class Organisation
     static function parsePublicationsPart($id, $pagenum = 1)
     {
         $publications = ElibraryCurl::getOrgPublications($id, $pagenum);
-//        self::savePublications($id, $publications);
+        self::savePublications($id, $publications);
 //        self::checkPublications($publications);
         return $publications;
     }
