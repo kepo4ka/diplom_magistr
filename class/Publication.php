@@ -10,7 +10,6 @@ class Publication
     {
         $publication = getById(self::$table, $id);
 
-
         if (!empty($publication['title'])) {
             $publication['refs'] = array();
             $publication['authors'] = array();
@@ -26,27 +25,27 @@ class Publication
             }
         } else {
             $publication = ElibraryCurl::getPublication($id);
+            self::save($publication);
+        }
 
-            if (!empty($publication['authors'])) {
-                foreach ($publication['authors'] as $author_id) {
-                    $author = Author::get($author_id, true);
+        if (!empty($publication['authors'])) {
+            foreach ($publication['authors'] as $author_id) {
+                $author = Author::get($author_id, true);
 
-                    if (!empty($author['organisations'])) {
-                        foreach ($author['organisations'] as $organisation_id) {
-                            Organisation::savePublication($organisation_id, $id);
-                        }
+                if (!empty($author['organisations'])) {
+                    foreach ($author['organisations'] as $organisation_id) {
+                        Organisation::savePublication($organisation_id, $id);
                     }
                 }
             }
-
-            if (!empty($publication['keywords_full'])) {
-                foreach ($publication['keywords_full'] as $keyword) {
-                    Keyword::save($keyword);
-                }
-            }
-
-            self::save($publication);
         }
+
+        if (!empty($publication['keywords_full'])) {
+            foreach ($publication['keywords_full'] as $keyword) {
+                Keyword::save($keyword);
+            }
+        }
+
         return $publication;
     }
 
@@ -87,7 +86,11 @@ class Publication
         $publication = getById(self::$table, $id);
         if (empty($publication['title'])) {
             $publication = ElibraryCurl::getPublication($id);
-
+            $res = self::save($publication);
+            if (empty($res)) {
+                return false;
+            }
+        } else {
             if (!empty($publication['authors'])) {
                 foreach ($publication['authors'] as $author_id) {
                     $author = Author::get($author_id, true);
@@ -105,11 +108,8 @@ class Publication
                     }
                 }
             }
-
-            self::save($publication);
-            return true;
         }
-        return false;
+        return true;
     }
 
 
