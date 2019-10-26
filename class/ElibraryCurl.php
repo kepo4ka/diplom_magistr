@@ -36,7 +36,6 @@ class ElibraryCurl
         $parsed_html = fetchProxy($url, $data);
 
 
-
 //        echoVarDumpPre($parsed_html);
 
         return $parsed_html;
@@ -207,7 +206,7 @@ class ElibraryCurl
             return false;
         }
 
-        return preg_match('/Доступ к сайту eLIBRARY\.RU для IP/m', $html);
+        return preg_match('/Доступ к сайту eLIBRARY\.RU для IP/m', $html) || preg_match('/Из-за нарушения правил пользования сайтом eLIBRARY/m', $html);
     }
 
     static function getPublication($id = 35287282)
