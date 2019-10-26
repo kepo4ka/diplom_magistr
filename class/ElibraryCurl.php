@@ -22,7 +22,9 @@ class ElibraryCurl
 
     static function login()
     {
-        global $elibrary_config;
+        global $elibrary_config, $query_count;
+        $query_count = 0;
+        ProxyDB::update();
 
         $url = $elibrary_config['base_url'] . '/' . 'start_session.asp';
 
@@ -31,12 +33,9 @@ class ElibraryCurl
             'password' => $elibrary_config['password']
         ];
 
-
         $parsed_html = fetchProxy($url, $data);
 
-        if (!empty($parsed_html)) {
-            $elibrary_config['authed'] = true;
-        }
+
 
 //        echoVarDumpPre($parsed_html);
 
@@ -45,10 +44,18 @@ class ElibraryCurl
 
     static function checkLogin($html = false)
     {
+        global $elibrary_config;
+
         if (!$html) {
             $html = self::getHome();
         }
-        return preg_match("/project_user_office/m", $html);
+        $res = preg_match("/project_user_office/m", $html);
+
+        if (!$res) {
+            $elibrary_config['authed'] = false;
+            return false;
+        }
+        return true;
     }
 
     static function logOut()
@@ -222,9 +229,7 @@ class ElibraryCurl
             $login = self::login();
 
             if (!self::checkLogin($login)) {
-                $elibrary_config['authed'] = false;
                 $find_login = preg_match('/' . $elibrary_config['login'] . '/m', $login);
-
                 arrayLog(array($elibrary_config, $find_login), 'Не удалось авторизоваться', 'error');
             }
         }
@@ -320,7 +325,6 @@ class ElibraryCurl
 
         if (!$elibrary_config['authed']) {
             if (!self::checkLogin(self::login())) {
-                $elibrary_config['authed'] = false;
                 arrayLog($elibrary_config, 'Не удалось авторизоваться 1', 'error');
             }
         }
