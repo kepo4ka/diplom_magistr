@@ -288,7 +288,8 @@ function fetchProxy($url, $z = null)
     global $query_count, $def_proxy_info, $delay_min, $delay_max, $sleep_mode;
 
     if ($query_count > 0) {
-        if ($query_count % 4 == 0) {
+        if ($query_count % 6 == 0) {
+            $query_count = 0;
             ProxyDB::update();
         }
     }
@@ -300,7 +301,7 @@ function fetchProxy($url, $z = null)
 
 
     while (empty($result)) {
-        if ($k > 3) {
+        if ($k > 2) {
             return false;
         }
 
@@ -567,32 +568,6 @@ function dataSetD3Format($length = 2)
 
     return $data;
 
-}
-
-function base_url()
-{
-    return strtok(sprintf(
-        "%s://%s%s",
-        isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https' : 'http',
-        $_SERVER['SERVER_NAME'],
-        $_SERVER['REQUEST_URI']
-    ), '?');
-}
-
-
-function urlLastPart($url, $separator = '/')
-{
-    if (empty($url)) {
-        return false;
-    }
-
-    $split = explode($separator, $url);
-
-    if (empty($split)) {
-        return false;
-    }
-    $part = $split[count($split) - 1];
-    return $part;
 }
 
 
