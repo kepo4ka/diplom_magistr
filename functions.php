@@ -571,6 +571,33 @@ function dataSetD3Format($length = 2)
 }
 
 
+function base_url()
+{
+    return strtok(sprintf(
+        "%s://%s%s",
+        isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https' : 'http',
+        $_SERVER['SERVER_NAME'],
+        $_SERVER['REQUEST_URI']
+    ), '?');
+}
+
+
+function urlLastPart($url, $separator = '/')
+{
+    if (empty($url)) {
+        return false;
+    }
+
+    $split = explode($separator, $url);
+
+    if (empty($split)) {
+        return false;
+    }
+    $part = $split[count($split) - 1];
+    return $part;
+}
+
+
 function makeDir($path)
 {
     return is_dir($path) || mkdir($path);
