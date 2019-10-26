@@ -207,8 +207,7 @@ class ElibraryCurl
             return false;
         }
 
-        return preg_match('/Из-за нарушения правил пользования сайтом eLIBRARY/m', $html);
-
+        return preg_match('/Доступ к сайту eLIBRARY\.RU для IP/m', $html);
     }
 
     static function getPublication($id = 35287282)
@@ -311,7 +310,6 @@ class ElibraryCurl
         $data->clear();
 
         if (empty($publication['title'])) {
-            echoVarDumpPre($parsed_html);
             return false;
         }
 
