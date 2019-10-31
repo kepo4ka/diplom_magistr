@@ -22,12 +22,31 @@ class ElibraryDB
         return $this->db->getAll($query, $this->organisations);
     }
 
-
-    function getOrganisationRelOrganisations($id)
+    function getAllOrganisationsIds()
     {
-        $query = 'SELECT `organisations`.`id` FROM `organisations`, `authors_to_organisations` WHERE `organisations`.`id`=`authors_to_organisations`.`orgsid`'
+        $query = 'SELECT `id` FROM ?n';
+        return $this->db->getCol($query, $this->organisations);
     }
 
+
+    function getOrganisationRelOrganisations($id = 5051)
+    {
+        $query = 'SELECT `authorid` FROM `authors_to_organisations` WHERE `authors_to_organisations`.`orgsid`=?s';
+
+        $authors_ids = $this->db->getCol($query, $id);
+
+        return $authors_ids;
+    }
+
+
+    function getAuthorOrganisations($id = 781679)
+    {
+        $query = 'SELECT `orgsid` FROM `authors_to_organisations` WHERE `authors_to_organisations`.`authorid`=?s';
+
+        $authors_ids = $this->db->getCol($query, $id);
+
+        return $authors_ids;
+    }
 
 
 }

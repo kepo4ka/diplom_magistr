@@ -1,14 +1,6 @@
 <?php
 
-require '../init.php';
-
-
-$elibDb = new ElibraryDB();
-
-$res = $elibDb->getAllOrganisations();
-
-echoVarDumpPre($res);
-
+require_once('../init.php');
 
 $length = 100;
 
@@ -71,7 +63,7 @@ $length = 100;
         height = +svg.attr("height");
 
 
-    var diameter = 1000,
+    var diameter = 21000,
         radius = diameter / 2,
         innerRadius = radius - 120;
 
@@ -96,7 +88,7 @@ $length = 100;
         .attr("width", width)
         .attr("height", height)
         .call(d3.zoom()
-            .scaleExtent([0.3, 100])
+            .scaleExtent([0.001, 100])
             .on("zoom", zoom));
 
     function zoom() {
@@ -106,7 +98,7 @@ $length = 100;
     var link = g.selectAll(".link"),
         node = g.selectAll(".node");
 
-    d3.json("part<?=$length?>.json", function (error, classes) {
+    d3.json("ajax.php", function (error, classes) {
         if (error) throw error;
 
         var
