@@ -24,7 +24,7 @@ class ElibraryCurl
     {
         global $elibrary_config, $query_count;
         $query_count = 0;
-        ProxyDB::update();
+
 
         $url = $elibrary_config['base_url'] . '/' . 'start_session.asp';
 
@@ -34,7 +34,6 @@ class ElibraryCurl
         ];
 
         $parsed_html = fetchProxy($url, $data);
-
 
 //        echoVarDumpPre($parsed_html);
 

@@ -13,6 +13,7 @@ require_once 'class/Organisation.php';
 require_once 'class/Publication.php';
 require_once 'class/Author.php';
 require_once 'class/Keyword.php';
+require_once 'class/ElibraryDB.php';
 
 
 $user = 'root';

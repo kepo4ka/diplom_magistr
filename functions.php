@@ -95,7 +95,7 @@ function getAllLimitAdvanced($table, $limit = 0, $offset = 0, $search_array, $or
 
     if ($limit > 0) {
     } else {
-        $limit = 1000;
+        $limit = 10000;
     }
 
     $query = "SELECT * FROM ?n";
@@ -105,18 +105,9 @@ function getAllLimitAdvanced($table, $limit = 0, $offset = 0, $search_array, $or
         $query .= ' WHERE';
 
         foreach ($search_array as $i => $iValue) {
-            if (empty($iValue['value'])) {
-                $iValue['full'] = true;
-            }
-
             $column = $iValue['column'];
             $value = $iValue['value'];
-
-            if (empty($iValue['full'])) {
-                $query .= " `$column` LIKE'%$value%' AND";
-            } else {
-                $query .= " `$column`='$value' AND";
-            }
+            $query .= " `$column`='$value' AND";
         }
         $query .= ' 1';
     }
@@ -135,9 +126,6 @@ function getAllLimitAdvanced($table, $limit = 0, $offset = 0, $search_array, $or
             $query .= " OFFSET $offset";
         }
     }
-//    echovarDumpPre($query);
-
-
     return $db->getAll($query, $table);
 }
 
@@ -602,3 +590,4 @@ function makeDir($path)
 {
     return is_dir($path) || mkdir($path);
 }
+

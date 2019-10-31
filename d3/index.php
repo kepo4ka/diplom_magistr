@@ -2,6 +2,14 @@
 
 require '../init.php';
 
+
+$elibDb = new ElibraryDB();
+
+$res = $elibDb->getAllOrganisations();
+
+echoVarDumpPre($res);
+
+
 $length = 100;
 
 // $users = \JsonMachine\JsonMachine::fromFile('dblp_papers_v11.json');
@@ -65,7 +73,7 @@ $length = 100;
 
     var diameter = 1000,
         radius = diameter / 2,
-        innerRadius = radius-120;
+        innerRadius = radius - 120;
 
     var cluster = d3.cluster()
         .size([360, innerRadius]);
