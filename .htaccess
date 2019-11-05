@@ -1,5 +1,5 @@
 order deny,allow
-deny from all
+
 # my IP
 allow from xx.xx.xx.xx (use your own IP address here)
 # Local development
