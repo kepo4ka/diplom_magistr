@@ -59,7 +59,6 @@ function updatePublications()
         $publication = ElibraryCurl::getPublication($id, false);
         arrayLog($publication, "Обновление статьи {$id}");
         Publication::save($publication);
-        exit;
     }
 }
 
