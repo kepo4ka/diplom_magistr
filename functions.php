@@ -70,6 +70,13 @@ function save($p_data, $table, $primary = 'id')
     return true;
 }
 
+function getCol($table, $column)
+{
+    global $db;
+
+    $query = 'SELECT ?n FROM ?n';
+    return $db->getCol($query, $column, $table);
+}
 
 function getById($table, $id)
 {
@@ -448,7 +455,7 @@ function checkRegular($re, $str, $index = 1)
     $matches = array();
 
     if (preg_match($re, $str, $matches)) {
-        if (!empty($matches[$index])) {
+        if (!empty($matches[$index]) || $matches[$index] == 0) {
             $result = $matches[$index];
         }
     }
