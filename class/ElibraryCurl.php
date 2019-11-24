@@ -208,7 +208,7 @@ class ElibraryCurl
         return preg_match('/Доступ к сайту eLIBRARY\.RU для IP/m', $html) || preg_match('/Из-за нарушения правил пользования сайтом eLIBRARY/m', $html);
     }
 
-    static function getPublication($id = 35287282)
+    static function getPublication($id = 35287282, $auth = true)
     {
         global $elibrary_config;
         $publication = array();
@@ -221,8 +221,16 @@ class ElibraryCurl
         $publication['refs'] = array();
         $publication['keywords'] = array();
         $publication['keywords_full'] = array();
+        $publication['publisher'] = '';
+        $publication['rubric'] = '';
+        $publication['in_rinc'] = '';
+        $publication['in_rinc_ker'] = '';
+        $publication['cit_in_rinc'] = 0;
+        $publication['cit_in_rinc_ker'] = 0;
+        $publication['impact_factor'] = 0;
+        $publication['norm_cit'] = 0;
 
-        if (!$elibrary_config['authed']) {
+        if (!$elibrary_config['authed'] && $auth) {
             $login = self::login();
 
             if (!self::checkLogin($login)) {
@@ -244,6 +252,8 @@ class ElibraryCurl
         if (empty($parsed_html) || empty($data)) {
             return false;
         }
+        $text = preg_replace('/&nbsp;/m', ' ', $data->plaintext);
+
 
         $title_selector = $data->find('.bigtext', 0);
         $title = '';
@@ -258,20 +268,39 @@ class ElibraryCurl
         foreach ($res as $d) {
             $k = false;
             $result = checkRegular('/Тип:&nbsp;<font color=#00008f>(.+?)<\/font>/m', $d);
-            if (!empty($result)) {
+            if (!empty($result) && empty($publication['type'])) {
                 $publication['type'] = $result;
             }
 
             $result = checkRegular('/Язык:&nbsp;<font color=#00008f>(.+?)<\/font>/m', $d);
-            if (!empty($result)) {
+            if (!empty($result) && empty($publication['language'])) {
                 $publication['language'] = $result;
             }
 
-            $result = checkRegular('/Год(.+?)?:&nbsp;<font color=#00008f>(.+?)<\/font>/m', $d, 2);
-            if (!empty($result)) {
+            $result = checkRegular('/Год(&nbsp;| )?(издания)?:&nbsp;<font color=#00008f>(\d+)<\/font>/m', $d, 3);
+            if (!empty($result) && empty($publication['year'])) {
                 $publication['year'] = $result;
             }
         }
+
+        $res = checkRegular('/Входит в РИНЦ(.+?):(.+?)(да|нет)/m', $text, 3);
+        $publication['in_rinc'] = trim($res);
+
+        $res = checkRegular('/Входит в ядро РИНЦ(.+?):(.+?)(да|нет)/m', $text, 3);
+        $publication['in_rinc_ker'] = trim($res);
+
+
+        $res = checkRegular('/Цитирований в РИНЦ(.+?):(.+?)([\d,]+)/m', $text, 3);
+        $publication['cit_in_rinc'] = (float) str_replace(',', '.', $res);
+
+
+        $res = checkRegular('/Цитирований из ядра РИНЦ(.+?):(.+?)([\d,]+)/m', $text, 3);
+        $publication['cit_in_rinc_ker'] = (float) str_replace(',', '.', $res);
+
+
+        $res = checkRegular('/Норм\. цитируемость по направлению:(.+?)([\d,]+)/m', $text, 2);
+        $publication['norm_cit'] = (float) str_replace(',', '.', $res);
+
 
         $authors = $data->find('a[title=Список публикаций этого автора]');
         foreach ($authors as $author) {
@@ -279,6 +308,34 @@ class ElibraryCurl
             $publication['authors'][] = $author_id;
         }
         $publication['authors'] = array_unique($publication['authors']);
+
+        $selector = $data->find('a[title=Список публикаций этого издательства]', 0);
+        if (!empty($selector)) {
+            $publication['publisher'] = $selector->plaintext;
+        }
+        if (empty($publication['publisher'])) {
+            $selector = $data->find('a[title=Информация об издательстве]', 0);
+            if (!empty($selector)) {
+                $publication['publisher'] = $selector->plaintext;
+            }
+        }
+        if (empty($publication['publisher'])) {
+            $selector = $data->find('a[title=Список журналов этого издательства]', 0);
+            if (!empty($selector)) {
+                $publication['publisher'] = $selector->plaintext;
+            }
+        }
+
+        $selector = $data->find('span#rubric_grnti', 0);
+        if (!empty($selector)) {
+            $rubric = $selector->plaintext;
+            $publication['rubric'] = checkRegular('/нет/m', $rubric, 0) ? '' : $rubric;
+        }
+        if (checkRegular('/\//m', $publication['rubric'], 0)) {
+            $publication['rubric'] = preg_replace('/ \/  /m', '.', $publication['rubric']);
+            $publication['rubric'] = preg_replace('/ /m', '_', $publication['rubric']);
+        }
+
 
         $matches = array();
         preg_match_all('/<a href=\"keyword_items\.asp\?id=(\d+)\">(.+?)<\/a>/m', $parsed_html, $matches);
@@ -294,16 +351,18 @@ class ElibraryCurl
         }
 
 
-        $refs = $data->find('a[title=Перейти на описание цитируемой публикации]');
-        foreach ($refs as $ref) {
-            $ref_id = checkRegular('/item.asp\?id=(\d+)/m', $ref->href);
-            $publication['refs'][] = $ref_id;
-        }
+        if ($auth) {
+            $refs = $data->find('a[title=Перейти на описание цитируемой публикации]');
+            foreach ($refs as $ref) {
+                $ref_id = checkRegular('/item.asp\?id=(\d+)/m', $ref->href);
+                $publication['refs'][] = $ref_id;
+            }
 
-        $load_more = $data->find('#show_reflist');
-        if (!empty($load_more)) {
-            $more_refs = self::getMorePublicationRefs($id);
-            $publication['refs'] = array_unique(array_merge($publication['refs'], $more_refs));
+            $load_more = $data->find('#show_reflist');
+            if (!empty($load_more)) {
+                $more_refs = self::getMorePublicationRefs($id);
+                $publication['refs'] = array_unique(array_merge($publication['refs'], $more_refs));
+            }
         }
 
 
