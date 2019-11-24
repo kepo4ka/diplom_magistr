@@ -6,6 +6,11 @@ class Publication
     static $table = 'publications';
     static $primary = 'id';
 
+    static function getIds()
+    {
+        return getCol(self::$table, self::$primary);
+    }
+
     static function get($id, $full = false)
     {
         $publication = getById(self::$table, $id);
