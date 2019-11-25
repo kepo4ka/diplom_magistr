@@ -8,7 +8,7 @@ class Publication
 
     static function getIds()
     {
-        return getCol(self::$table, self::$primary);
+        return getCol1(self::$table, self::$primary);
     }
 
     static function get($id, $full = false)
