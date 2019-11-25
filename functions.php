@@ -78,6 +78,14 @@ function getCol($table, $column)
     return $db->getCol($query, $column, $table);
 }
 
+function getCol1($table, $column)
+{
+    global $db;
+
+    $query = 'SELECT ?n FROM ?n WHERE `rubric`=""';
+    return $db->getCol($query, $column, $table);
+}
+
 function getById($table, $id)
 {
     global $db;
