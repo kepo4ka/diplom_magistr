@@ -331,12 +331,13 @@ function fetchProxy($url, $z = null)
             $t = 1;
         }
         $t++;
+    }
 
-        if ($sleep_mode) {
-            $sleep_time = rand($delay_min, $delay_max);
-            arrayLog('', 'Sleep ' . $sleep_time . ' s...', 'warning');
-            sleep($sleep_time);
-        }
+
+    if ($sleep_mode) {
+        $sleep_time = rand($delay_min, $delay_max);
+        arrayLog('', 'Sleep ' . $sleep_time . ' s...', 'warning');
+        sleep($sleep_time);
     }
 
     $checkBan = ElibraryCurl::checkIpBan($result);
