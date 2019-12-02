@@ -13,7 +13,7 @@ class ProxyDB
         global $proxy_list;
 
         $proxy_list = array();
-        $url = base_url() . 'proxy_list.txt';
+        $url = 'https://api.good-proxies.ru/get.php?type%5Bhttp%5D=on&access%5B%27supportsHttps%27%5D=on&count=&ping=5000&time=600&works=100&key=eafe7d8457512d1979001d8b7c4992ba';
 
         $data = fetchNoProxy($url);
 
