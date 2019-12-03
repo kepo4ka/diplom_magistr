@@ -326,7 +326,7 @@ function fetchProxy($url, $z = null)
         $query_count++;
         $k++;
 
-        if ($t > 2) {
+        if ($t > 1) {
             $log = array();
             $log['proxy'] = $def_proxy_info['full'];
             $log['url'] = $url;
@@ -336,6 +336,7 @@ function fetchProxy($url, $z = null)
             ProxyDB::update();
 
             arrayLog($log, $message, 'error');
+            $t = 1;
         }
         $t++;
     }
