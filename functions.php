@@ -86,6 +86,15 @@ function getCol1($table, $column)
     return $db->getCol($query, $column, $table);
 }
 
+function getOneRandomEmptyRecordField($table, $column, $filter_column, $value)
+{
+    global $db;
+
+    $query = 'SELECT ?n FROM ?n WHERE ?n=?s ORDER BY RAND()';
+    return $db->getOne($query, $column, $table, $filter_column, $value);
+}
+
+
 function getById($table, $id)
 {
     global $db;
