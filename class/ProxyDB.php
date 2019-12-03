@@ -96,17 +96,26 @@ class ProxyDB
 
 
         if (empty($proxy_list)) {
-            arrayLog('STOP WORK', 'Proxy List Empty', 'error');
-            exit;
+            $proxy_list = self::getList();
+            if (empty($proxy_list)) {
+                arrayLog('STOP WORK', 'Proxy List Empty', 'error');
+                exit;
+            }
         }
 
         $index = rand(0, count($proxy_list) - 1);
         $def_proxy_info = $proxy_list[$index];
+
+        if ($index > count($proxy_list) * 0.7) {
+            $proxy_list = self::getList();
+        }
+
         $index = rand(0, count($user_agents) - 1);
         $current_user_agent = $user_agents[$index];
         @unlink(getCookiePath(1));
 
         $elibrary_config = updateAuthAccount();
+
 
         arrayLog(array('New Proxy: ' . $def_proxy_info['full']), 'Change Proxy');
 
