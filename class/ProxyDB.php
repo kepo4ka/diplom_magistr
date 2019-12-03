@@ -17,6 +17,12 @@ class ProxyDB
 
         $data = fetchNoProxy($url);
 
+        if (preg_match('/[^\d:\s\n.]+/', $data)) {
+            sleep(10);
+            return self::getList();
+        }
+
+
         $lines = preg_split('/\n/m', trim($data));
 
         $proxy_info = array();
