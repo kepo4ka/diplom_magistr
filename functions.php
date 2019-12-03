@@ -332,10 +332,8 @@ function fetchProxy($url, $z = null)
             $log['url'] = $url;
 
             $message = 'Bad Request';
-
-            ProxyDB::update();
-
             arrayLog($log, $message, 'error');
+            ProxyDB::update();
             $t = 1;
         }
         $t++;
