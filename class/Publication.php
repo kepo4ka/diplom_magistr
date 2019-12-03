@@ -11,6 +11,11 @@ class Publication
         return getCol1(self::$table, self::$primary);
     }
 
+    static function getEmptyRubricId()
+    {
+        return getOneRandomEmptyRecordField(self::$table, self::$primary, 'rubric', '');
+    }
+
     static function get($id, $full = false)
     {
         $publication = getById(self::$table, $id);
