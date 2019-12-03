@@ -106,7 +106,7 @@ class ProxyDB
         $index = rand(0, count($proxy_list) - 1);
         $def_proxy_info = $proxy_list[$index];
 
-        if ($index > count($proxy_list) * 0.7) {
+        if ($index > count($proxy_list) * 0.98 - 1) {
             $proxy_list = self::getList();
         }
 
