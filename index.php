@@ -60,9 +60,10 @@ function updatePublications()
 
     while (!empty($id)) {
         $publication = ElibraryCurl::getPublication($id, false);
-        arrayLog($publication, "Обновление статьи {$id}");
-        Publication::save($publication);
-
+        if (!empty($publication)) {
+            arrayLog($publication, "Обновление статьи {$id}");
+            Publication::save($publication);
+        }
         $id = Publication::getEmptyRubricId();
     }
 
