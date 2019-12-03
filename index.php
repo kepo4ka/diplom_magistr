@@ -45,7 +45,8 @@ $filter = array();
 $filter['publicationid'] = 39204055;
 $filter['authorid'] = 1001122;
 
-updatePublications();
+
+//updatePublications();
 //parseOrganisationPublications();
 
 //$publication = ElibraryCurl::getPublication(5812008);
@@ -54,12 +55,22 @@ updatePublications();
 
 function updatePublications()
 {
-    $publications = Publication::getIds();
-    foreach ($publications as $id) {
+    $id = Publication::getEmptyRubricId();
+
+    while (!empty($id)) {
         $publication = ElibraryCurl::getPublication($id, false);
         arrayLog($publication, "Обновление статьи {$id}");
         Publication::save($publication);
+
+        $id = Publication::getEmptyRubricId();
     }
+
+//    $publications = Publication::getIds();
+//    foreach ($publications as $id) {
+//        $publication = ElibraryCurl::getPublication($id, false);
+//        arrayLog($publication, "Обновление статьи {$id}");
+//        Publication::save($publication);
+//    }
 }
 
 
