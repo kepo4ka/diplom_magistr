@@ -45,6 +45,7 @@ $filter = array();
 $filter['publicationid'] = 39204055;
 $filter['authorid'] = 1001122;
 
+updatePublications();
 
 //updatePublications();
 //parseOrganisationPublications();
