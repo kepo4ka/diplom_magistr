@@ -18,6 +18,7 @@ class ProxyDB
         $data = fetchNoProxy($url);
 
         if (preg_match('/[^\d:\s\n.]+/', $data)) {
+            arrayLog('', 'Ошибка загрузка Списка Прокси. Сон 10 сек...', 'error');
             sleep(10);
             return self::getList();
         }
