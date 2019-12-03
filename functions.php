@@ -313,7 +313,7 @@ function fetchProxy($url, $z = null)
 
 
     while (empty($result)) {
-        if ($k > 2) {
+        if ($k > 3) {
             return false;
         }
 
@@ -326,7 +326,7 @@ function fetchProxy($url, $z = null)
         $query_count++;
         $k++;
 
-        if ($t > 1) {
+        if ($t > 2) {
             $log = array();
             $log['proxy'] = $def_proxy_info['full'];
             $log['url'] = $url;
@@ -336,8 +336,6 @@ function fetchProxy($url, $z = null)
             ProxyDB::update();
 
             arrayLog($log, $message, 'error');
-
-            $t = 1;
         }
         $t++;
     }
@@ -359,6 +357,7 @@ function fetchProxy($url, $z = null)
 
         ProxyDB::deleteProxy($def_proxy_info);
         arrayLog($log, $message, 'error');
+        ProxyDB::update();
 
         $result = fetchProxy($url, $z);
     }
