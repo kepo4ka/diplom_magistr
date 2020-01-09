@@ -8,3 +8,6 @@ cookie.txt
 
 cookies/
 d3/dblp_papers_v11.json
+.my.cnf
+db_get.bat
+db_set.bat
