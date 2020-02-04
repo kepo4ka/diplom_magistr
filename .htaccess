@@ -1,6 +1,0 @@
-order deny,allow
-
-# my IP
-allow from xx.xx.xx.xx (use your own IP address here)
-# Local development
-allow from localhost
