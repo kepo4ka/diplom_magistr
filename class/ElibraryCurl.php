@@ -522,7 +522,7 @@ class ElibraryCurl
 
             arrayLog('', 'Парсинг Организаций, Страница - ' . $pagenum);
 
-            $data['params'] = [
+            $z['params'] = [
                 'pagenum' => $pagenum,
                 'orgname' => '',
                 'town' => '',
@@ -532,7 +532,7 @@ class ElibraryCurl
                 'order' => 0,
             ];
 
-            $parsed_html = fetchProxy($url, $data);
+            $parsed_html = fetchProxy($url, $z);
 
             $data = str_get_html($parsed_html);
 
@@ -543,7 +543,7 @@ class ElibraryCurl
             $res = $data->find('form[name=results]');
 
             $matches = array();
-            preg_match_all('/org_about\.asp\?orgsid=(\d+)/m', $res[0], $matches);
+            preg_match_all('/org_about\.asp\?orgsid=(\d+)/m', @$res[0], $matches);
 
             if (!empty($matches[1])) {
                 $items = $matches[1];
