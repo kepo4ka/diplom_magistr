@@ -99,7 +99,9 @@ class ElibraryCurl
 
             if (empty($organisation['type'])) {
                 $finded = checkRegular('/Тип\s{2,}(.+?)\s{2,}/m', $str);
-                $organisation['type'] = $finded;
+                if (!checkRegular('/Телефон/', $finded, 0)) {
+                    $organisation['type'] = $finded;
+                }
             }
 
             if (empty($organisation['country'])) {
@@ -114,7 +116,9 @@ class ElibraryCurl
 
             if (empty($organisation['region'])) {
                 $finded = checkRegular('/Регион\s{2,}(.+?)\s{2,}/m', $str);
-                $organisation['region'] = $finded;
+                if (!checkRegular('/Город/', $finded, 0)) {
+                    $organisation['region'] = $finded;
+                }
             }
 
             if (checkArrayFilled($organisation)) {
@@ -291,15 +295,15 @@ class ElibraryCurl
 
 
         $res = checkRegular('/Цитирований в РИНЦ(.+?):(.+?)([\d,]+)/m', $text, 3);
-        $publication['cit_in_rinc'] = (float) str_replace(',', '.', $res);
+        $publication['cit_in_rinc'] = (float)str_replace(',', '.', $res);
 
 
         $res = checkRegular('/Цитирований из ядра РИНЦ(.+?):(.+?)([\d,]+)/m', $text, 3);
-        $publication['cit_in_rinc_ker'] = (float) str_replace(',', '.', $res);
+        $publication['cit_in_rinc_ker'] = (float)str_replace(',', '.', $res);
 
 
         $res = checkRegular('/Норм\. цитируемость по направлению:(.+?)([\d,]+)/m', $text, 2);
-        $publication['norm_cit'] = (float) str_replace(',', '.', $res);
+        $publication['norm_cit'] = (float)str_replace(',', '.', $res);
 
 
         $authors = $data->find('a[title=Список публикаций этого автора]');
@@ -499,33 +503,59 @@ class ElibraryCurl
         return $publications;
     }
 
-    static function getKeywordPublications($id = 2324764, $pagenum = 1)
+
+    static function getAllOrganisations()
     {
         global $elibrary_config;
+        $url = $elibrary_config['base_url'] . '/' . 'orgs.asp';
 
-        $publications = array();
+        $pagenum = 1;
+        $parsed_count = 0;
 
-        $url = $elibrary_config['base_url'] . '/' . 'keyword_items.asp';
-        $data['params'] = ['id' => $id,
-            'pagenum' => $pagenum];
-        $parsed_html = fetchProxy($url, $data);
+        while (true) {
 
-        $data = str_get_html($parsed_html);
+            $data['params'] = [
+                'pagenum' => $pagenum,
+                'orgname' => '',
+                'town' => '',
+                'regionid' => 0,
+                'countryid' => '',
+                'sortorder' => 0,
+                'order' => 0,
+            ];
 
-        if (empty($data)) {
-            return false;
+            $parsed_html = fetchProxy($url, $data);
+
+            $data = str_get_html($parsed_html);
+
+            if (empty($data)) {
+                return false;
+            }
+
+            $res = $data->find('form[name=results]');
+
+            $matches = array();
+            preg_match_all('/org_about\.asp\?orgsid=(\d+)/m', $res[0], $matches);
+
+            if (!empty($matches[1])) {
+                $items = $matches[1];
+            }
+
+
+            if (empty($items)) {
+                break;
+            }
+            $parsed_count += count($items);
+
+            $data->clear();
+
+            foreach ($items as $key => $item) {
+                $info = Organisation::get($item);
+                echoVarDumpPre($info);
+            }
         }
+        return $parsed_count;
 
-        $res = $data->find('form[name=results]');
-        $matches = array();
-        preg_match_all('/id="arw(\d+)"/m', $res[0], $matches);
-
-        if (!empty($matches[1])) {
-            $publications = $matches[1];
-        }
-
-        $data->clear();
-        return $publications;
     }
 
 }

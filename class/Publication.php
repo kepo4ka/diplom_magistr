@@ -268,6 +268,20 @@ class Publication
         return $refs;
     }
 
+    static function updatePublications()
+    {
+        $id = Publication::getEmptyRubricId();
+
+        while (!empty($id)) {
+            $publication = ElibraryCurl::getPublication($id, false);
+            if (!empty($publication)) {
+                arrayLog($publication, "Обновление статьи {$id}");
+                Publication::save($publication);
+            }
+            $id = Publication::getEmptyRubricId();
+        }
+    }
+
 }
 
 

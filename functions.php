@@ -185,10 +185,10 @@ function getOneToMany($table, $column, $value, $needed_column, $limit = 0)
 
 function getAccounts()
 {
-    global $accounts_list;
+    global $accounts_list, $project_url;
     $accounts_list = array();
 
-    $url = 'http://localhost/elibrary/accounts.txt';
+    $url = $project_url . 'accounts.txt';
 
     $data = fetchNoProxy($url);
 
@@ -262,6 +262,19 @@ function fetch($url, $z = null)
 //        curl_setopt($ch, CURLOPT_PROXYUSERPWD, $z['proxy']['auth']);
     }
 
+    if (!empty($z['post']) || !empty($z['json'])) {
+        curl_setopt($ch, CURLOPT_POST, 1);
+    }
+
+    if (!empty($z['post'])) {
+        $ch = setHeaders_Form($ch);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($z['post']));
+    }
+
+    if (!empty($z['json'])) {
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($z['json']));
+    }
+
 
     if (isset($z['refer'])) {
         curl_setopt($ch, CURLOPT_REFERER, $z['refer']);
@@ -292,6 +305,21 @@ function fetch($url, $z = null)
     curl_close($ch);
 
     return $result;
+}
+
+
+function setHeaders_Form($ch)
+{
+    $headers = [
+        "Accept: */*",
+//        "Accept-Encoding: gzip, deflate",
+        "Cache-Control: no-cache",
+        "Connection: keep-alive",
+        "Content-Type: application/x-www-form-urlencoded",
+    ];
+
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    return $ch;
 }
 
 

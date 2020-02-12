@@ -7,6 +7,7 @@ class Organisation
     static $primary = 'id';
 
 
+
     static function get($id, $full = false)
     {
         $organisation = getById(self::$table, $id);
@@ -123,6 +124,72 @@ class Organisation
 //        self::checkPublications($publications);
         return $publications;
     }
+
+
+
+    static function parseOrganisationPublications()
+    {
+        global $org_id, $pagenum, $query_count, $start;
+        $organisation = Organisation::get($org_id, true);
+        while (true) {
+            $org_publications = Organisation::parsePublicationsPart($org_id, $pagenum);
+
+            arrayLog('', 'Полученные статьи организации на странице ' . $pagenum);
+
+            $pagenum++;
+
+            if (empty($org_publications)) {
+                break;
+            }
+
+            if (!empty($pagenum_end) && $pagenum > $pagenum_end) {
+                break;
+            }
+
+            foreach ($org_publications as $org_publication) {
+                $publication = Publication::get($org_publication, true);
+
+                if (empty($publication['title'])) {
+                    continue;
+                }
+
+                arrayLog($publication['title'], 'Работа со статьей ' . $publication['id']);
+
+                if (!empty($publication['authors'])) {
+                    foreach ($publication['authors'] as $pub_author) {
+                        $author_pagenum = 1;
+                        while (!empty(Author::parsePublicationsPart($pub_author, $author_pagenum))) {
+                            $author_pagenum++;
+                        }
+                    }
+                }
+
+                if (!empty($publication['keywords_full'])) {
+                    foreach ($publication['keywords_full'] as $keyword) {
+                        Keyword::save($keyword);
+                    }
+                }
+
+                if (!empty($publication['refs'])) {
+                    foreach ($publication['refs'] as $pub_ref) {
+                        $ref = Publication::get($pub_ref, true);
+                    }
+                }
+            }
+
+        }
+
+
+        arrayLog($query_count, 'Количество запросов');
+        arrayLog('Информация об организация <strong>' . $organisation['name'] . '</strong> Добавлена', 'Информация об организации');
+        arrayLog('Время выполнения скрипта: ' . round(microtime(true) - $start, 4) . ' сек.', 'Время выполнения скрипта');
+
+        exit;
+
+    }
+
+
+
 }
 
 

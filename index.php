@@ -41,101 +41,12 @@ $start = microtime(true);
 arrayLog(array('Work Started'), 'Start', 'start');
 ProxyDB::update();
 
-$filter = array();
-$filter['publicationid'] = 39204055;
-$filter['authorid'] = 1001122;
-
-updatePublications();
-
-//updatePublications();
-//parseOrganisationPublications();
-
-//$publication = ElibraryCurl::getPublication(5812008);
-//echoVarDumpPre($publication);
+echoVarDumpPre(ElibraryCurl::getAllOrganisations());
 
 
-function updatePublications()
-{
-    $id = Publication::getEmptyRubricId();
-
-    while (!empty($id)) {
-        $publication = ElibraryCurl::getPublication($id, false);
-        if (!empty($publication)) {
-            arrayLog($publication, "Обновление статьи {$id}");
-            Publication::save($publication);
-        }
-        $id = Publication::getEmptyRubricId();
-    }
-
-//    $publications = Publication::getIds();
-//    foreach ($publications as $id) {
-//        $publication = ElibraryCurl::getPublication($id, false);
-//        arrayLog($publication, "Обновление статьи {$id}");
-//        Publication::save($publication);
-//    }
-}
+Organisation::parseOrganisationPublications();
 
 
-function parseOrganisationPublications()
-{
-    global $org_id, $pagenum, $query_count, $start;
-    $organisation = Organisation::get($org_id, true);
-    while (true) {
-        $org_publications = Organisation::parsePublicationsPart($org_id, $pagenum);
-
-        arrayLog('', 'Полученные статьи организации на странице ' . $pagenum);
-
-        $pagenum++;
-
-        if (empty($org_publications)) {
-            break;
-        }
-
-        if (!empty($pagenum_end) && $pagenum > $pagenum_end) {
-            break;
-        }
-
-        foreach ($org_publications as $org_publication) {
-            $publication = Publication::get($org_publication, true);
-
-            if (empty($publication['title'])) {
-                continue;
-            }
-
-            arrayLog($publication['title'], 'Работа со статьей ' . $publication['id']);
-
-            if (!empty($publication['authors'])) {
-                foreach ($publication['authors'] as $pub_author) {
-                    $pagenum1 = 1;
-                    while (!empty(Author::parsePublicationsPart($pub_author, $pagenum1))) {
-                        $pagenum1++;
-                    }
-                }
-            }
-
-            if (!empty($publication['keywords_full'])) {
-                foreach ($publication['keywords_full'] as $keyword) {
-                    Keyword::save($keyword);
-                }
-            }
-
-            if (!empty($publication['refs'])) {
-                foreach ($publication['refs'] as $pub_ref) {
-                    $ref = Publication::get($pub_ref, true);
-                }
-            }
-        }
-
-    }
-
-
-    arrayLog($query_count, 'Количество запросов');
-    arrayLog('Информация об организация <strong>' . $organisation['name'] . '</strong> Добавлена', 'Информация об организации');
-    arrayLog('Время выполнения скрипта: ' . round(microtime(true) - $start, 4) . ' сек.', 'Время выполнения скрипта');
-
-    exit;
-
-}
 
 
 

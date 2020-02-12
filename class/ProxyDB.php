@@ -10,14 +10,15 @@ class ProxyDB
 
     static function getList()
     {
-        global $proxy_list;
+        global $proxy_list, $project_url;
 
         $proxy_list = array();
-        $url = 'https://api.good-proxies.ru/get.php?type%5Bhttp%5D=on&access%5B%27supportsHttps%27%5D=on&count=&ping=5000&time=600&works=100&key=eafe7d8457512d1979001d8b7c4992ba';
+        $url = $project_url . 'proxy_list.txt';
 
         $data = fetchNoProxy($url);
 
-        if (preg_match('/[^\d:\s\n.]+/', $data)) {
+
+        if (preg_match('/[^\w:\s\n.@]+/', $data, $na)) {
             arrayLog('', 'Ошибка загрузка Списка Прокси. Сон 10 сек...', 'error');
             sleep(10);
             return self::getList();

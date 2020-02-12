@@ -5,6 +5,8 @@ $cookiePath1 = dirname(__FILE__) . '\cookie.txt';
 
 $accounts_list = array();
 
+$project_url = 'http://localhost/';
+
 $elibrary_config = [
     'login' => '',
     'password' => '',
