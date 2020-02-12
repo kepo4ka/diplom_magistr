@@ -5,7 +5,7 @@ $cookiePath1 = dirname(__FILE__) . '\cookie.txt';
 
 $accounts_list = array();
 
-$project_url = 'http://localhost/';
+$project_url = 'http://localhost/elibrary/parser/';
 
 $elibrary_config = [
     'login' => '',
