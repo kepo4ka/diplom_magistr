@@ -559,6 +559,7 @@ class ElibraryCurl
             foreach ($items as $key => $item) {
                 Organisation::get($item);
             }
+            $pagenum++;
         }
         return $parsed_count;
     }
