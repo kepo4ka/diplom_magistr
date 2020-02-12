@@ -57,7 +57,7 @@ $query_count = 0;
 
 $sleep_mode = true;
 $delay_min = 1;
-$delay_max = 4;
+$delay_max = 8;
 
 $max_try = 2;
 
