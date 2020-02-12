@@ -44,7 +44,7 @@ ProxyDB::update();
 echoVarDumpPre(ElibraryCurl::getAllOrganisations());
 
 
-Organisation::parseOrganisationPublications();
+//Organisation::parseOrganisationPublications();
 
 
 

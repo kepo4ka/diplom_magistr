@@ -514,6 +514,14 @@ class ElibraryCurl
 
         while (true) {
 
+            if ($pagenum % 10 === 0) {
+                $pause = rand(250, 320);
+                arrayLog('', 'Парсинг Организаций, Пауза - ' . $pause . 'сек');
+                sleep($pause);
+            }
+
+            arrayLog('', 'Парсинг Организаций, Страница - ' . $pagenum);
+
             $data['params'] = [
                 'pagenum' => $pagenum,
                 'orgname' => '',
@@ -541,7 +549,6 @@ class ElibraryCurl
                 $items = $matches[1];
             }
 
-
             if (empty($items)) {
                 break;
             }
@@ -550,14 +557,11 @@ class ElibraryCurl
             $data->clear();
 
             foreach ($items as $key => $item) {
-                $info = Organisation::get($item);
-                echoVarDumpPre($info);
+                Organisation::get($item);
             }
         }
         return $parsed_count;
-
     }
-
 }
 
 
