@@ -1,6 +1,11 @@
 <?php
 
 include 'init.php';
+
+header('location: covid.php');
+exit;
+
+
 $proccess_id = substr(md5(microtime()), 0, 5);
 
 $proxy_list = ProxyDB::getList();
