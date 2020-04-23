@@ -15,15 +15,16 @@ class ProxyDB
         $proxy_list = array();
         $url = $project_url . 'proxy_list.txt';
 
+
+
         $data = fetchNoProxy($url);
 
-
         if (preg_match('/[^\w:\s\n.@]+/', $data, $na)) {
+            \Helper\Helper::echoVarDumpPre('Ошибка загрузка Списка Прокси');
             arrayLog('', 'Ошибка загрузка Списка Прокси. Сон 10 сек...', 'error');
             sleep(10);
             return self::getList();
         }
-
 
         $lines = preg_split('/\n/m', trim($data));
 
@@ -110,6 +111,8 @@ class ProxyDB
                 exit;
             }
         }
+
+
 
         $index = rand(0, count($proxy_list) - 1);
         $def_proxy_info = $proxy_list[$index];
