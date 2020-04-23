@@ -162,6 +162,7 @@ function getTopCities()
             $info['cpi'] = @$info['indexes']['cpi'];
             $info['safety'] = @$info['indexes']['safety'];
             $info['country_iso'] = $info['country']['code'];
+            $info['is_top'] = true;
 
             DB::save($info, 'cities', 'id');
         }
@@ -178,22 +179,16 @@ function getTopCities()
 
 function getCities()
 {
-    $url = 'https://www.routitude.com/api/geo/v2/cities/geonameid/';
     $cities = DB::getAll('cities');
-
 
     $k = 1;
 
     foreach ($cities as $city) {
-        $full_url = $url . $city['id'];
-        $info = fetch($full_url);
-        $info = json_decode($info, true);
+        $info = getCity($city['id']);
 
         if (empty($info)) {
             continue;
         }
-        $info['id'] = $info['geoname_id'];
-
 
         DB::save($info, 'cities', 'id');
         if ($k % 3 == 0) {
@@ -206,11 +201,33 @@ function getCities()
 }
 
 
+function getCity($id)
+{
+    $url = 'https://www.routitude.com/api/geo/v2/cities/geonameid/';
+
+    $full_url = $url . $id;
+    $info = fetch($full_url);
+    $info = json_decode($info, true);
+
+    if (empty($info)) {
+        return false;
+    }
+
+
+    $info['id'] = $info['geoname_id'];
+    $info['iata'] = @$info['iata_code'];
+    $info['cpi'] = @$info['indexes']['cpi'];
+    $info['safety'] = @$info['indexes']['safety'];
+    $info['country_iso'] = $info['country']['iso_code'];
+    $info['is_top'] = false;
+    return $info;
+}
+
+
 function getAirports()
 {
     $url = 'https://www.routitude.com/api/routes/v2/from_city/';
     $cities = DB::getAll('cities');
-
 
     $k = 1;
 
@@ -227,10 +244,14 @@ function getAirports()
         }
 
         foreach ($info['airports'] as $airport) {
-            $airport['city'] = $airport['cg_id'];
-            if (empty($airport['city'])) {
+            $airport['city_id'] = $airport['cg_id'];
+            $airport['city_name'] = @$airport['c_name'];
+
+            if (empty($airport['city_id'])) {
                 continue;
             }
+
+            getCityAutoComplete($airport['city_name']);
 
             DB::save($airport, 'airports', 'id');
         }
@@ -267,4 +288,72 @@ function getAirports()
         }
         $k++;
     }
+}
+
+
+function getCityAutoComplete($search)
+{
+    $url = 'https://www.routitude.com//api/geo/v2/cities/autocomplete/';
+
+    $info = Helper::fetch($url . $search);
+
+    $info = json_decode($info, true);
+
+    if (empty($info)) {
+        return false;
+    }
+
+    $k = 1;
+    foreach ($info as $city) {
+        $exist = DB::getById('cities', $city['geoname_id']);
+
+        if ($exist) {
+            continue;
+        }
+
+        $city['id'] = $city['geoname_id'];
+
+        $city = getCity($city['id']);
+
+        if (empty($city)) {
+            continue;
+        }
+
+        DB::save($city, 'cities', 'id');
+        if ($k % 3 == 0) {
+            ProxyDB::update();
+        }
+        $k++;
+    }
+    return count($info);
+}
+
+function getCitiesFromAirportsDB()
+{
+    $airports = DB::getAll('airports');
+
+    $k = 1;
+
+    foreach ($airports as $airport) {
+        $city_id = $airport['city_id'];
+
+        if (!DB::checkExist('cities', 'id', $city_id)) {
+            $info = getCity($city_id);
+
+            if (empty($info))
+            {
+                continue;
+            }
+
+            DB::save($info, 'cities');
+
+            if ($k % 3 == 0) {
+                ProxyDB::update();
+                $k = 0;
+            }
+            $k++;
+        }
+    }
+
+    return true;
 }

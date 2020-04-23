@@ -16,8 +16,9 @@ $proxy_list = ProxyDB::getList();
 ProxyDB::update();
 
 
-getVisaInfo();
-getAirports();
+
+getCitiesFromAirportsDB();
+
 
 
 
