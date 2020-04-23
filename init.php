@@ -16,6 +16,8 @@ require_once 'class/Author.php';
 require_once 'class/Keyword.php';
 require_once 'class/ElibraryDB.php';
 
+require_once __DIR__ . '/class/covid/Covid.php';
+
 
 $user = 'root';
 $pass = '';
