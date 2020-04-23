@@ -17,7 +17,7 @@ ProxyDB::update();
 
 
 
-getCitiesFromAirportsDB();
+getAirports();
 
 
 
