@@ -11,3 +11,6 @@ d3/dblp_papers_v11.json
 .my.cnf
 db_get.bat
 db_set.bat
+.idea/curl.iml
+.idea/php.xml
+.idea/workspace.xml
