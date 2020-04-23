@@ -11,12 +11,20 @@ class ComposerStaticInitcbb75d65d04d4ee67bcd9e905e591029
         array (
             'JsonMachine\\' => 12,
         ),
+        'H' => 
+        array (
+            'Helper\\' => 7,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
         'JsonMachine\\' => 
         array (
             0 => __DIR__ . '/..' . '/halaxa/json-machine/src',
+        ),
+        'Helper\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/kepo4ka/helper/php',
         ),
     );
 

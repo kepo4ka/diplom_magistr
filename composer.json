@@ -10,6 +10,12 @@
     }
   ],
   "require": {
-    "halaxa/json-machine": "0.3.2"
-  }
+    "halaxa/json-machine": "0.3.2",
+    "kepo4ka/helper": "dev-master"
+  },
+  "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/kepo4ka/myHelper.git"
+        }]
 }

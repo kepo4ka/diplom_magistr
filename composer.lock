@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e5cc0325100e717e927c169788748f62",
+    "content-hash": "81c5baffc28c0bf765654524ce0eec05",
     "packages": [
         {
             "name": "halaxa/json-machine",
@@ -49,12 +49,50 @@
             ],
             "description": "Fast, efficient and easy-to-use JSON stream parser developed for unpredictably long JSON streams or documents.",
             "time": "2019-03-20T19:33:36+00:00"
+        },
+        {
+            "name": "kepo4ka/helper",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kepo4ka/myHelper.git",
+                "reference": "953b1b5cc9ee1ae938d3ef79dc1cc20a0ecdadad"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kepo4ka/myHelper/zipball/953b1b5cc9ee1ae938d3ef79dc1cc20a0ecdadad",
+                "reference": "953b1b5cc9ee1ae938d3ef79dc1cc20a0ecdadad",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Helper\\": "php/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "kepo4ka",
+                    "email": "ksdfsad@asfsef.se"
+                }
+            ],
+            "description": "A simple hello world composer package",
+            "support": {
+                "source": "https://github.com/kepo4ka/myHelper/tree/master",
+                "issues": "https://github.com/kepo4ka/myHelper/issues"
+            },
+            "time": "2020-04-22T15:56:28+00:00"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "kepo4ka/helper": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

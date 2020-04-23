@@ -7,4 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'JsonMachine\\' => array($vendorDir . '/halaxa/json-machine/src'),
+    'Helper\\' => array($vendorDir . '/kepo4ka/helper/php'),
 );
