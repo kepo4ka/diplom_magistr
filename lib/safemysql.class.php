@@ -138,6 +138,7 @@ class SafeMySQL
             $res = $this->rawQuery($this->prepareQuery(func_get_args()));
             return $res;
         } catch (Exception $exception) {
+            \Helper\Helper::echoVarDumpPre($this->prepareQuery(func_get_args()));
             $info['query'] = $this->prepareQuery(func_get_args());
         }
 
