@@ -232,6 +232,11 @@ function getAirports()
     $k = 1;
 
     foreach ($cities as $city) {
+
+        if (DB::checkExist('airports', 'city_id', $city['id'])) {
+            continue;
+        }
+
         $full_url = $url . $city['id'];
         $z['post']['rand'] = rand(1, 100000);
 
@@ -340,8 +345,7 @@ function getCitiesFromAirportsDB()
         if (!DB::checkExist('cities', 'id', $city_id)) {
             $info = getCity($city_id);
 
-            if (empty($info))
-            {
+            if (empty($info)) {
                 continue;
             }
 
