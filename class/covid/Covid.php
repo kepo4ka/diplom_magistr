@@ -228,14 +228,9 @@ function getAirports()
 {
     $url = 'https://www.routitude.com/api/routes/v2/from_city/';
     $cities = DB::getAll('cities');
-
     $k = 1;
-
+    $t = 0;
     foreach ($cities as $city) {
-
-        if (DB::checkExist('airports', 'city_id', $city['id'])) {
-            continue;
-        }
 
         $full_url = $url . $city['id'];
         $z['post']['rand'] = rand(1, 100000);
@@ -256,6 +251,9 @@ function getAirports()
                 continue;
             }
 
+            if (DB::checkExist('cities', 'name', $airport['city_name'])) {
+                continue;
+            }
             getCityAutoComplete($airport['city_name']);
 
             DB::save($airport, 'airports', 'id');
@@ -285,14 +283,16 @@ function getAirports()
                 ]
             ];
             DB::save($destination, 'destinations', $primary);
+            $t++;
         }
-
 
         if ($k % 3 == 0) {
             ProxyDB::update();
         }
         $k++;
     }
+
+    Helper::echoVarDumpPre($t);
 }
 
 
