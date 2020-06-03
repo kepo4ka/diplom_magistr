@@ -62,7 +62,7 @@
         },
         "time": "2020-04-22T15:56:28+00:00",
         "type": "library",
-        "installation-source": "source",
+        "installation-source": "dist",
         "autoload": {
             "psr-4": {
                 "Helper\\": "php/"
