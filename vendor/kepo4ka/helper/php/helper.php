@@ -704,11 +704,24 @@ class Helper
     }
 
 
+    public static function json_encode($val)
+    {
+        return json_encode($val, JSON_UNESCAPED_UNICODE);
+    }
+
+    public static function json_decode($val)
+    {
+        return json_decode($val, true);
+    }
+
+    // Сохранение функции для обратной совместимости
     public
     static function json_encodeKirilica($val)
     {
         return json_encode($val, JSON_UNESCAPED_UNICODE);
     }
+
+
 
 
     /**
@@ -1014,13 +1027,25 @@ class Helper
         }
         return true;
     }
-	
-	
-	public static function checkJson($str)
-{
-    $json = json_decode($str);
-    return $json && $str != $json;
-}
 
+
+    public static function checkJson($str)
+    {
+        $json = json_decode($str);
+        return $json && $str != $json;
+    }
+
+
+    public static function getIp()
+    {
+        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+            $ip = $_SERVER['HTTP_CLIENT_IP'];
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } else {
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+        return $ip;
+    }
 
 }

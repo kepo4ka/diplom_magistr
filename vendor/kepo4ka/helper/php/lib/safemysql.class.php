@@ -133,12 +133,17 @@ class SafeMySQL
      */
     public function query()
     {
-        try {
-            $res = $this->rawQuery($this->prepareQuery(func_get_args()));
-            return $res;
-        } catch (Exception $exception) {
-            return false;
+        $prepare = $this->prepareQuery(func_get_args());
+        if (!empty($_ENV['log_query'])) {
+            try {
+                \Helper\DB::logDB($prepare, 'log_query');
+            } catch (Exception $exception) {
+
+            }
         }
+        $res = $this->rawQuery($prepare);
+
+        return $res;
     }
 
     /**
@@ -386,8 +391,8 @@ class SafeMySQL
      * $data = $db->getArr($sql, $order, $dir, $start, $per_page);
      *
      * @param string $iinput - field name to test
-     * @param  array $allowed - an array with allowed variants
-     * @param  string $default - optional variable to set if no match found. Default to false.
+     * @param array $allowed - an array with allowed variants
+     * @param string $default - optional variable to set if no match found. Default to false.
      * @return string|FALSE    - either sanitized value or FALSE
      */
     public function whiteList($input, $allowed, $default = FALSE)
@@ -408,8 +413,8 @@ class SafeMySQL
      * $sql     = "INSERT INTO ?n SET ?u";
      * $db->query($sql,$table,$data);
      *
-     * @param  array $input - source array
-     * @param  array $allowed - an array with allowed field names
+     * @param array $input - source array
+     * @param array $allowed - an array with allowed field names
      * @return array filtered out source array
      */
     public function filterArray($input, $allowed)
@@ -525,6 +530,7 @@ class SafeMySQL
             }
             $query .= $part;
         }
+
         return $query;
     }
 

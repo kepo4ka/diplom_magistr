@@ -56,12 +56,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kepo4ka/myHelper.git",
-                "reference": "953b1b5cc9ee1ae938d3ef79dc1cc20a0ecdadad"
+                "reference": "479018ad067bf81814f1fffe4895c2c412b2cd0c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kepo4ka/myHelper/zipball/953b1b5cc9ee1ae938d3ef79dc1cc20a0ecdadad",
-                "reference": "953b1b5cc9ee1ae938d3ef79dc1cc20a0ecdadad",
+                "url": "https://api.github.com/repos/kepo4ka/myHelper/zipball/479018ad067bf81814f1fffe4895c2c412b2cd0c",
+                "reference": "479018ad067bf81814f1fffe4895c2c412b2cd0c",
                 "shasum": ""
             },
             "type": "library",
@@ -84,7 +84,7 @@
                 "source": "https://github.com/kepo4ka/myHelper/tree/master",
                 "issues": "https://github.com/kepo4ka/myHelper/issues"
             },
-            "time": "2020-04-22T15:56:28+00:00"
+            "time": "2020-06-12T11:08:08+00:00"
         }
     ],
     "packages-dev": [],

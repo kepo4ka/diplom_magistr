@@ -225,7 +225,12 @@ class DB
         if (is_array($primary)) {
             $exist = self::getByColumnAndArray($table, $primary);
         } else {
-            $exist = self::checkExist($table, $primary, $data[$primary]);
+            if (!isset($data[$primary])) {
+                $exist = false;
+            }
+            else {
+                $exist = self::checkExist($table, $primary, $data[$primary]);
+            }
         }
 
         if (!$exist) {
@@ -316,40 +321,77 @@ class DB
     }
 
 
+    public static function createLogTable($table = 'debug_log')
+    {
+        global $db;
+        $query = "
+CREATE TABLE `$table` (
+  `id` int(11) NOT NULL,
+  `date` datetime NOT NULL DEFAULT current_timestamp(),
+  `title` varchar(100) NOT NULL,
+  `type` varchar(20) NOT NULL,
+  `data` text NOT NULL,
+  `site` varchar(25) NOT NULL,
+  `proccess_id` varchar(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
+";
+
+
+        $query1 = "
+ALTER TABLE `$table`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `date` (`date`),
+  ADD KEY `title` (`title`),
+  ADD KEY `type` (`type`),
+  ADD KEY `proccess_id` (`proccess_id`); 
+ALTER TABLE `$table`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;";
+
+        try {
+            return $db->query($query) && $db->query($query1);
+        } catch (Exception $exception) {
+            return false;
+        }
+    }
+
     /**
      * Записать данные в Лог-базу
      * @param $data mixed Данные для записи
      * @param string $title Заголовок
      * @param string $type Тип
-     * @return FALSE|resource Результат операции
+     * @return array|FALSE|resource
      */
     public static function logDB($data, $title = 'Info', $type = 'info', $table = 'debug_log')
     {
         global $config, $db;
 
-        $count = self::counting($table);
+        try {
+            $count = self::counting($table);
 
-        if ($count > 500) {
-            $primary = 'id';
-            $id = $db->getOne('SELECT ?n FROM ?n', $primary, $table);
+            if ($count > 500) {
+                $primary = 'id';
+                $id = $db->getOne('SELECT ?n FROM ?n', $primary, $table);
 
-            if (!empty($id)) {
-                $db->query('DELETE FROM ?n WHERE ?n=?i', $table, $primary, $id);
+                if (!empty($id)) {
+                    $db->query('DELETE FROM ?n WHERE ?n=?i', $table, $primary, $id);
+                }
             }
+
+            if (!is_array($data)) {
+                $data = [$data];
+            }
+
+            $element = array();
+            $element['data'] = json_encode($data, JSON_UNESCAPED_UNICODE);
+            $element['type'] = $type;
+            $element['title'] = $title;
+            @$element['site'] = @$config['site'];
+            $element['proccess_id'] = @$config['proccess_id'];
+
+            return $db->query('INSERT INTO ?n SET ?u', $table, $element);
+        } catch (Exception $exception) {
+            return ['error' => true, 'message' => $exception->getMessage()];
         }
-
-        if (!is_array($data)) {
-            $data = [$data];
-        }
-
-        $element = array();
-        $element['data'] = json_encode($data);
-        $element['type'] = $type;
-        $element['title'] = $title;
-        @$element['site'] = $config['site'];
-        $element['proccess_id'] = $config['proccess_id'];
-
-        return $db->query('INSERT INTO ?n SET ?u', $table, $element);
     }
 
     /**
@@ -368,6 +410,13 @@ class DB
         return $db->getAll($query, $table);
     }
 
+
+    public static function clearlogDB($table = 'debug_log')
+    {
+        global $db;
+        $table = 'debug_log';
+        return $db->query('DELETE FROM ?n', $table);
+    }
 
     /**
      * Удаляет текущую директорию и все файлы и папки в ней, включая скрытые файлы (.extension)...
